@@ -268,7 +268,11 @@ distribution site and unpack it into the future document directory:
 cd $DOCNAME
 curl http://ivoatex.g-vo.org/ivoatex-latest.tar.gz \
   | tar -xvzf -k
+sh ivoatex/startup.sh $DOCNAME
 \end{lstlisting}
+
+The shell script will print some error messages because no version
+control has been enabled.  These are safe to ignore.
 
 \subsubsection{Installation with git version control}
 
@@ -282,23 +286,34 @@ you may make to ivoatex:
 cd $DOCNAME
 git init
 git submodule add https://github.com/ivoa-std/ivoatex
-cp ivoatex/svn-ignore.txt .gitignore
-git add .gitignore
-git commit -m "Starting ..."
+sh ivoatex/startup.sh $DOCNAME
+git commit -m "Starting $DOCNAME"
 \end{lstlisting}
 
-At this point create a repository in your account using github.com's web
+The \verb|ivoatex/startup.sh| script will copy a few template files from
+the ivoatex distribution to the working space.  You could do that
+manually, too; see the script for what files to move where.
+
+At this point, create a repository in your account using github.com's web
 interface. Use \$DOCNAME as the repository name, and do not choose any
 template; this procedure will leave you at a web page with a URI like
-https://github.com/msdemlei/ivoatexDoc.  This is your repository URI.
+\nolinkurl{https://github.com/msdemlei/ivoatexDoc}.  
+Opening that URI in a web browser, you can obtain a
+``Clone URI'', which is what you can push to.  Use the ssh variant,
+i.e., something like \verb|git@github.com:username/docname.git|.
 
 Then, push your newly changed material into this new repository's main
 branch:
-
 \begin{lstlisting}[language=sh,basicstyle=\footnotesize]
+<<<<<<< HEAD
 git remote add origin <repository URI>
+=======
+git remote add origin <Clone URI>
+>>>>>>> f58d567 (Updates for new startup.sh)
 git push --set-upstream origin main
 \end{lstlisting}
+(depending on your git version, you may have to use ``master'' rather
+than ``main'').
 
 \subsubsection{Beginning the document}
 \label{sect:beginning}
@@ -306,14 +321,11 @@ git push --set-upstream origin main
 \paragraph{Main metadata in the Makefile}
 
 For convenience, the document production should start from some common
-templates which are part of the \ivoatex\ distribution:
+templates which are part of the \ivoatex\ distribution.  The above
+procedure has already created \verb|README.rst| (a brief introduction to
+what the document is about), \verb|$DOCNAME.tex| (the future document)
+and \verb|Makefile| (where some of the document metadata is defined).
 
-\begin{lstlisting}[language=sh]
-cp ivoatex/Makefile.template Makefile
-cp ivoatex/document.template $DOCNAME.tex
-# Notes don't need the following
-cp ivoatex/archdiag-full.xml role_diagram.xml 
-\end{lstlisting}
 
 The next step is to fill out the makefile template.  
 As of the formatting of this document, this template looks like this:
@@ -330,7 +342,8 @@ DALI-style ISO format \citep{2017ivoa.spec.0517D}, e.g., 2014-03-31.
 when the source file is split into separate files or if material is
 included into the document, e.g., via \texword{lstinputlisting}.
 Graphics files included do not need to be given here, as the document
-will automatically depend on them.
+will automatically depend on them.  The exception is
+\verb|role_diagram.pdf|; see~sect.~\ref{sect:archdiag}.
 
 \texttt{FIGURES} must contain the names of all bitmap graphics included
 in the document; files missing here will be missing from the package for
@@ -389,18 +402,39 @@ though.}:
 \item No Group (only possible for Notes)
 \end{compactitem}
 
+\paragraph{The README}
+
+The \verb|README.rst| template should be edited to give a short
+(one-paragraph) introduction to what the document is about at an even
+higher level than the abstract.  The template also contains instructions
+for building, pointers to the IVOA document repository, and a license
+statement.  While you can change these if you want, that should not
+usually be necessary.
+
 
 \paragraph{The Architecture Diagram}
+\label{sect:archdiag}
 
 An architecture diagram is only 
 necessary for documents on the recommendation track.  Notes may have
 one, but since Notes are not shown on it, that is rather
-unusual.  If you do not want to include an architecture diagram, remove
-\texttt{role\_diagram.svg} from \texttt{FIGURES} and
-\texttt{role\_diagram.pdf} from \texttt{SOURCES} in the makefile.
+unusual.  
 
-To prepare an architecture diagram, copy
-\texttt{ivoatex/archdiag-full.xml} to \texttt{role\_diagram.xml}.  Then edit
+To prepare an architecture diagram, first obtain the full description of
+all IVOA standards:
+
+\begin{lstlisting}[language=sh]
+cp ivoatex/archdiag-full.xml role_diagram.xml 
+git add role_diagram.xml
+\end{lstlisting}
+
+This is just an abstract specification that is compiled into images.  To
+ensure this happens, \verb|role_diagram.svg| to \verb|FIGURES| in the
+Makefile.  As long as the \LaTeX~toolchain does not support the SVG
+image format, you must additionally append \verb|role_diagram.pdf| to
+\verb|SOURCES|.
+
+Then edit
 \texttt{role\_diagram.xml} and remove all references to standards unrelated
 to the current document.  As a rule, all \texttt{rec} elements for
 standards not mentioned in
@@ -425,7 +459,7 @@ programs.  In the PDF renderings of the document,
 a PDF version of the architecture diagram is
 required.  This is built using \texttt{make role\_diagram.pdf}, and a
 stand-in will be built if your system lacks the software to do this
-conversion (currently: inkscape).
+conversion (currently: rsvg-convert).
 
 As long as the tooling situation regarding \LaTeX~and SVG is as
 unsatisfactory as it is, please commit both \texttt{role\_diagram.svg} and
