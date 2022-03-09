@@ -268,7 +268,7 @@ distribution site and unpack it into the future document directory:
 cd $DOCNAME
 curl http://ivoatex.g-vo.org/ivoatex-latest.tar.gz \
   | tar -xvzf -k
-sh ivoatex/startup.sh $DOCNAME
+sh ivoatex/create-templates.sh $DOCNAME
 \end{lstlisting}
 
 The shell script will print some error messages because no version
@@ -286,7 +286,7 @@ you may make to ivoatex:
 cd $DOCNAME
 git init
 git submodule add https://github.com/ivoa-std/ivoatex
-sh ivoatex/startup.sh $DOCNAME
+sh ivoatex/create-templates.sh $DOCNAME
 git commit -m "Starting $DOCNAME"
 \end{lstlisting}
 
@@ -322,7 +322,7 @@ than ``main'').
 
 For convenience, the document production should start from some common
 templates which are part of the \ivoatex\ distribution.  The above
-procedure has already created \verb|README.rst| (a brief introduction to
+procedure has already created \verb|README.md| (a brief introduction to
 what the document is about), \verb|$DOCNAME.tex| (the future document)
 and \verb|Makefile| (where some of the document metadata is defined).
 
@@ -404,7 +404,7 @@ though.}:
 
 \paragraph{The README}
 
-The \verb|README.rst| template should be edited to give a short
+The \verb|README.md| template should be edited to give a short
 (one-paragraph) introduction to what the document is about at an even
 higher level than the abstract.  The template also contains instructions
 for building, pointers to the IVOA document repository, and a license
