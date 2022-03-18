@@ -1031,6 +1031,200 @@ the editor should send the standards record to the registry of
 registries by e-mail\footnote{See \url{http://rofr.ivoa.net/} for
 contact information.} and then re-submit the record with each upload.
 
+
+\subsection{Adding tests}
+
+Many IVOA documents contain machine-readable artefacts or make
+machine-verifiable claims.  If this is true for your document, consider
+adding a \verb|test| target (since 2022, \ivoatex's template Makefile
+alrady provides one).
+
+The \verb|test| recipe should be designed so that
+
+\begin{itemize}
+\item the recipe fails if an assertion fails,
+\item minimal (ideally no) output is produced for succeeding assertions,
+\item extra (i.e., non-\ivoatex~software) required to run the tests is
+documented in a Makefile comment right above the recipe.
+\end{itemize}
+
+In the following, we discuss some typical scenarios for which tests
+should be provided.
+
+\subsubsection{Schema Validation}
+
+Standards that come with XML schemas should validate both the schema and
+one or more instance documents, which ideally should exercise as many
+aspects of the schema as possible.  The instance files do not need to be
+part of the released standard, although the auxilaryurl mechanism (see
+sect.~\ref{sect:links}) would give a simple way to include these, too,
+without overly impacting the document's appearance.
+
+In order to limit the variety of tools editors may need, it is
+recommended to use the \verb|xsdvalidate| subcommand of stilts
+\citep{2006ASPC..351..666T} for validation; this subcommand is available
+only after stilts version 3.4.  The VOResource
+standard\footnote{\url{https://github.com/ivoa-std/VOResource}} shows an
+example (edited here for clarity):
+
+\begin{lstlisting}[language=make,basicstyle=\footnotesize]
+STILTS ?= stilts
+
+# These tests need stilts >3.4
+test:
+  @$(STILTS) xsdvalidate VOResource-v1.1.xsd
+  @$(STILTS) xsdvalidate \
+    schemaloc='http://www.ivoa.net/xml/VOResource/v1.0=VOResource-v1.1.xsd' \
+    example-voresource.xml
+\end{lstlisting}
+
+Some brief explanations are in order:
+
+\begin{itemize}
+\item Using a variable for STILTS allows one to easily override the
+execution path if necessary (e.g., because of out-of-date system
+packages or custom paths) like this:
+
+\begin{lstlisting}[language=sh]
+STILTS=stilts-beta make test
+\end{lstlisting}
+
+\item The comment specifies the dependencies to save later editors or
+authors trial and error.  This becomes particularly important as test
+suites grow.
+
+\item The first line of the recipe validates the schema itself.  The
+leading \verb|@| suppresses output, which reduces clutter in case
+diagnostics are produced.
+
+\item The second line of the recipe validates an instance document.  The
+important thing here is to override the schema for the standard's target
+namespace with the local copy of the schema; without the extra
+\verb|schemaloc| parameter, stilts would validate against the schema
+from the document repository, which would both hide problems in the new
+schema and lead to false positives in the instance document validated
+(as it will not validate against the previous schema if it exercises new
+features, which it should).  Further \verb|schemaloc| parameters (then
+usually pointing to network resources) could be used for instance
+documents lacking \verb|schemaLocation| specifications.  As in the
+example, use continuation lines (with backslashes) to keep the command
+lines readable.
+
+\end{itemize}
+
+\subsubsection{Running Queries}
+
+Where documents contain sample queries or requests, it is good practice
+to automatically extract and execute these, ideally with some basic
+checks for sane results.  An example for how this can be organised can
+be found with the RegTAP
+standard\footnote{\url{https://github.com/ivoa-std/RegTAP}}.  
+
+Again, to keep the number of different tools editors might need low, it
+is recommended to base such code on either stilts or pyVO
+\citep{2014ascl.soft02004G}, with the latter more likely as you will
+usually need some logic to extract the sample queries.  
+
+In RegTAP, the test rule looks like this (edited here for clarity):
+
+\begin{lstlisting}[language=make,basicstyle=\footnotesize]
+# These tests require python3 and pyvo (Debian: python3-pyvo)
+test:
+  @TAP_ACCESS_URL=http://dc.g-vo.org/tap python3 check_examples.py
+\end{lstlisting}
+
+The script \verb|check_examples.py| is too long to be reproduced in
+full, but its core is:
+
+\begin{lstlisting}[language=python,basicstyle=\footnotesize]
+def main():
+  svc = pyvo.dal.TAPService(TAP_ACCESS_URL)
+  with open("RegTAP.tex") as f:
+    for title, sample_query in iter_examples(f):
+      try:
+        result = svc.run_sync(sample_query).to_table()
+        if not len(result):
+          print(f"WARNING: Example returned no records in sect. '{title}'")
+      except Exception as ex:
+        print(f"ERROR: Example went bad in sect. {title}")
+        print(ex)
+        sys.exit(1)
+\end{lstlisting}
+
+Some notes on this:
+
+\begin{itemize}
+\item Again, suppress echoing of the make commands by prefixing recipe
+lines with \verb|@| in order to keep the output tidy.
+
+\item Tests of this kind will almost always use remote network
+resources.  If possible, do not hide these within the (potentially
+complex) Python code but make them explicit (and easily adaptable) in
+the Makefile.
+
+\item The Python fragment above should essentially do for any standard
+discussing TAP queries. Note that the script distinguishes between
+venial (empty results just give a warning and do not abort the
+test run) and mortal (execution errors make the test run abort
+immediately; the call to \verb|sys.exit| is important to make the entire
+make rule fail) sins. It again will produce no output if everything runs
+fine.
+
+\item The \verb|iter_examples| generator used in the Python code is expected
+to yield pairs of section titles and sample queries.  The code in RegTAP
+uses heuristics strictly valid only for this document (e.g., queries in
+lstlisting environments, subsections as the relevant sectioning
+element).  The basic idea -- have some magic comment to signal that an
+example is executable -- should be widely applicable, though.  
+This way, a verifiable query in the instance document looks like
+this:
+\begin{lstlisting}[language=tex,basicstyle=\footnotesize]
+%CHECK_HERE
+\begin{lstlisting}[language=SQL,flexiblecolumns=true]
+SELECT ivoid 
+FROM rr.resource
+...
+\end{lstlisting}
+
+\end{itemize}
+
+\subsubsection{Miscelleneous Tests}
+
+Tests can also come as simple shell commands (returning non-zero on
+failure and emitting some diagnostics only in that case) as well.  Where
+these go beyond one-liners, one should probably use a shell script.
+Any dependency beyond the unix core tools should again be documented in
+a Makefile comment right above the test rule.
+
+An example for this type of check is again given in the VOResource
+standard\footnote{\url{https://github.com/ivoa-std/VOResource}}, where
+the test rule then would be:
+
+\begin{lstlisting}[language=make,basicstyle=\footnotesize]
+# These tests xmlstarlet
+test:
+  @sh test-assertions.sh
+\end{lstlisting}
+
+The shell script called could run multiple tests, in particular if they
+share some common infrastructure.  It is recommended to isolate each
+test in a shell function with a name starting with ``assert'' and then
+calling these shell functions as appopriate.  In the VOResource example,
+where the authors make sure that if a Recommendation is being published,
+the schema version tag actually is ``clean'', such a shell function
+takes a shape like:
+
+\begin{lstlisting}[language=sh,basicstyle=\footnotesize]
+assert_schema_version_for_rec() {
+  # make sure the schema version has no tags if this is a REC
+  if xmlstarlet sel -T -t -m "xs:schema" -v "@version"  $SCHEMA \
+    | grep "^[0-9]\.[0-9]$" > /dev/null ; then
+    : # all is fine, no output
+  else
+    die "$SCHEMA version has tags (inappropriate for a REC release)"
+  fi
+}
+\end{lstlisting}
 \subsection{Submitting a Document}
 
 Snapshots of documents should be regularly submitted to the document
@@ -1057,6 +1251,10 @@ their version identifiers are what you expect (in particular, for
 recommendations, such version identifier should have no appendices
 of the kind ``-pr1''.  The \verb|AUX_FILES| variable in your Makefile is
 a good start for what files to check.
+\item For documents that provide a \verb|test| target, run 
+\verb|make test|; 
+this target must at least not error out and ideally not produce
+any diagnostics.
 \item Run \verb|make| and inspect \verb|${DOCNAME}.log|.  There should
 obviously be no undefined citations or internal references.  Also, try
 to avoid overfull hboxes (underfull hboxes are not always avoidable).
@@ -1117,14 +1315,14 @@ following the `triangle' workflow (Fig.~\ref{fig:triangleWorkflow}) to
 make later contributions easier. 
 
 \begin{figure}[th]
-	\begin{center}
-		\includegraphics[width=0.9\textwidth]{triangle_workflow.png} 
-	\end{center}
-	\caption{The `triangle' workflow, where updates are made to a local
-	    copy of the official repository, pushed to a fork of the 
-	    repository and contributed back to the official repository 
-	    through pull requests.}
-	\label{fig:triangleWorkflow}
+  \begin{center}
+    \includegraphics[width=0.9\textwidth]{triangle_workflow.png} 
+  \end{center}
+  \caption{The `triangle' workflow, where updates are made to a local
+      copy of the official repository, pushed to a fork of the 
+      repository and contributed back to the official repository 
+      through pull requests.}
+  \label{fig:triangleWorkflow}
 \end{figure}
 
 \begin{enumerate}
@@ -1149,10 +1347,10 @@ git remote -v
 
 you should see output similar to 
 \begin{lstlisting}[language=sh]
-mine	git@github.com:username/standard.git (fetch)
-mine	git@github.com:username/standard.git (push)
-origin	git://github.com/ivoa-std/standard.git (fetch)
-origin	git://github.com/ivoa-std/standard.git (push)
+mine  git@github.com:username/standard.git (fetch)
+mine  git@github.com:username/standard.git (push)
+origin  git://github.com/ivoa-std/standard.git (fetch)
+origin  git://github.com/ivoa-std/standard.git (push)
 \end{lstlisting}
 
 
