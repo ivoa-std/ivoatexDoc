@@ -1061,9 +1061,9 @@ sect.~\ref{sect:links}) would give a simple way to include these, too,
 without overly impacting the document's appearance.
 
 In order to limit the variety of tools editors may need, it is
-recommended to use the \verb|xsdvalidate| subcommand of stilts
+recommended to use the \verb|xsdvalidate| subcommand of STILTS
 \citep{2006ASPC..351..666T} for validation; this subcommand is available
-only in stilts versions later than 3.4-3\footnote{The stilts jar file can be
+only in STILTS versions later than 3.4-3\footnote{The STILTS jar file can be
 downloaded from \url{http://www.starlink.ac.uk/stilts/stilts.jar}}.
 The VOResource
 standard\footnote{\url{https://github.com/ivoa-std/VOResource}} shows an
@@ -1072,7 +1072,7 @@ example (edited here for clarity):
 \begin{lstlisting}[language=make,basicstyle=\footnotesize]
 STILTS ?= java -jar stilts.jar
 
-# These tests need stilts >3.4-3
+# These tests need STILTS >3.4-3
 test:
   @$(STILTS) xsdvalidate VOResource-v1.1.xsd
   @$(STILTS) xsdvalidate \
@@ -1102,7 +1102,7 @@ diagnostics are produced.
 \item The second line of the recipe validates an instance document.  The
 important thing here is to override the schema for the standard's target
 namespace with the local copy of the schema; without the extra
-\verb|schemaloc| parameter, stilts would validate against the schema
+\verb|schemaloc| parameter, STILTS would validate against the schema
 from the document repository, which would both hide problems in the new
 schema and lead to false positives in the instance document validated
 (as it will not validate against the previous schema if it exercises new
@@ -1123,7 +1123,7 @@ be found with the RegTAP
 standard\footnote{\url{https://github.com/ivoa-std/RegTAP}}.  
 
 Again, to keep the number of different tools editors might need low, it
-is recommended to base such code on either stilts or pyVO
+is recommended to base such code on either STILTS or pyVO
 \citep{2014ascl.soft02004G}, with the latter more likely as you will
 usually need some logic to extract the sample queries.  
 
@@ -1227,6 +1227,16 @@ assert_schema_version_for_rec() {
   fi
 }
 \end{lstlisting}
+
+Note the STILTS package mentioned above includes some other tools
+that may be useful for testing, for instance the subcommands
+\verb|votlint| for checking VOTables and \verb|datalinklint| for
+checking DataLink tables; see the
+documentation\footnote{\url{http://www.starlink.ac.uk/stilts/sun256/cmdUsage.html}}
+for details.
+In particular it is a good idea to validate all example VOTable documents
+included in document text.
+
 \subsection{Submitting a Document}
 
 Snapshots of documents should be regularly submitted to the document
