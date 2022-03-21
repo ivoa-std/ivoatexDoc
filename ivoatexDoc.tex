@@ -297,7 +297,7 @@ branch:
 
 \begin{lstlisting}[language=sh,basicstyle=\footnotesize]
 git remote add origin <repository URI>
-git push --set-upstream origin master
+git push --set-upstream origin main
 \end{lstlisting}
 
 \subsubsection{Beginning the document}
@@ -1306,7 +1306,8 @@ place to ensure transparent and reproducible processes.
 \subsection{The ivoa-std Organisation}
 
 Do people always start in private repos?  Do some documents start
-directly in ivoa-std?  Do we have a stance on main vs.~master?
+directly in ivoa-std?  Do we have a stance on main vs.~master
+(looks like we're using main).
 
 How does one get one's document into ivoa-std?  And when?
 
@@ -1461,8 +1462,8 @@ file with the proposed \verb|<short-name>|
 browser UI and using the ``import'' facility to import the \verb|<original-repo>|
 \item Make a local clone and build the document; if this fails, create an issue
 for the original author(s) to fix before any work can proceed
-\item Optional: add github workflow, commit, and push directly to master branch
-\item Setup branch protection rules for the master branch (see below)
+\item Optional: add github workflow, commit, and push directly to main branch
+\item Setup branch protection rules for the main branch (see below)
 \item Give the WG team and the editor admin privileges (see below)
 \item Notify the WG and the editor of the move via the WG's mailing list
 \item Notify the original owner, noting that \verb|<original-repo>|
@@ -1472,7 +1473,7 @@ now be forked from ivoa-std in order to enable future pull requests
 \end{enumerate}
 
 Branch protection rules are set up in the ``Settings'' tab of the repository (top right). 
-On the left side of the settings page, chose ``Branches'' and either edit the \verb|master|
+On the left side of the settings page, chose ``Branches'' and either edit the \verb|main|
 branch rules (if present) or add a new rule (if not). The standard set of rules that are
 suitable for most development are:
 
