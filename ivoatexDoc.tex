@@ -1063,14 +1063,16 @@ without overly impacting the document's appearance.
 In order to limit the variety of tools editors may need, it is
 recommended to use the \verb|xsdvalidate| subcommand of stilts
 \citep{2006ASPC..351..666T} for validation; this subcommand is available
-only after stilts version 3.4.  The VOResource
+only in stilts versions later than 3.4-3\footnote{The stilts jar file can be
+downloaded from \url{http://www.starlink.ac.uk/stilts/stilts.jar}}.
+The VOResource
 standard\footnote{\url{https://github.com/ivoa-std/VOResource}} shows an
 example (edited here for clarity):
 
 \begin{lstlisting}[language=make,basicstyle=\footnotesize]
-STILTS ?= stilts
+STILTS ?= java -jar stilts.jar
 
-# These tests need stilts >3.4
+# These tests need stilts >3.4-3
 test:
   @$(STILTS) xsdvalidate VOResource-v1.1.xsd
   @$(STILTS) xsdvalidate \
@@ -1104,11 +1106,11 @@ namespace with the local copy of the schema; without the extra
 from the document repository, which would both hide problems in the new
 schema and lead to false positives in the instance document validated
 (as it will not validate against the previous schema if it exercises new
-features, which it should).  Further \verb|schemaloc| parameters (then
-usually pointing to network resources) could be used for instance
-documents lacking \verb|schemaLocation| specifications.  As in the
-example, use continuation lines (with backslashes) to keep the command
-lines readable.
+features, which it should).  Further \verb|schemaloc| parameters,
+pointing to either local files or network resources,
+can be used if other schema locations need to be specified.
+As in the example, use continuation lines (with backslashes)
+to keep the command lines readable.
 
 \end{itemize}
 
