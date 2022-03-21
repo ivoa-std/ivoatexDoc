@@ -1044,7 +1044,7 @@ The \verb|test| recipe should be designed so that
 \begin{itemize}
 \item the recipe fails if an assertion fails,
 \item minimal (ideally no) output is produced for succeeding assertions,
-\item extra (i.e., non-\ivoatex~software) required to run the tests is
+\item extra (i.e., non-\ivoatex) software required to run the tests is
 documented in a Makefile comment right above the recipe.
 \end{itemize}
 
@@ -1188,7 +1188,7 @@ FROM rr.resource
 
 \end{itemize}
 
-\subsubsection{Miscelleneous Tests}
+\subsubsection{Miscellaneous Tests}
 
 Tests can also come as simple shell commands (returning non-zero on
 failure and emitting some diagnostics only in that case) as well.  Where
@@ -1201,7 +1201,7 @@ standard\footnote{\url{https://github.com/ivoa-std/VOResource}}, where
 the test rule then would be:
 
 \begin{lstlisting}[language=make,basicstyle=\footnotesize]
-# These tests xmlstarlet
+# These tests require xmlstarlet
 test:
   @sh test-assertions.sh
 \end{lstlisting}
