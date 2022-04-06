@@ -1063,7 +1063,7 @@ without overly impacting the document's appearance.
 In order to limit the variety of tools editors may need, it is
 recommended to use the \verb|xsdvalidate| subcommand of STILTS
 \citep{2006ASPC..351..666T} for validation; this subcommand is available
-only in STILTS versions later than 3.4-3\footnote{The STILTS jar file can be
+only in STILTS versions 3.4-4 or later\footnote{The STILTS jar file can be
 downloaded from \url{http://www.starlink.ac.uk/stilts/stilts.jar}}.
 The VOResource
 standard\footnote{\url{https://github.com/ivoa-std/VOResource}} shows an
@@ -1072,7 +1072,7 @@ example (edited here for clarity):
 \begin{lstlisting}[language=make,basicstyle=\footnotesize]
 STILTS ?= java -jar stilts.jar
 
-# These tests need STILTS >3.4-3
+# These tests need STILTS >=3.4-4
 test:
   @$(STILTS) xsdvalidate VOResource-v1.1.xsd
   @$(STILTS) xsdvalidate \
