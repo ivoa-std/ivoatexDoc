@@ -1284,6 +1284,11 @@ as defined in the Makefile):
 \item Make sure your ivoatex is up to date; in git checkouts, run
 \verb|make update| (or, equivalently, 
 \verb|git submodule update --remote|).
+\item If the document contains generated content, run 
+\verb|make generate| 
+and inspect the subsequent output of 
+\verb|git diff| 
+for anything unexpected.
 \item Add the version-specific URL and designation (e.g.,
 ``WD-20100801'') using \texword{previousversion} of the currently
 published document (i.e., the version you are replacing) in the document
