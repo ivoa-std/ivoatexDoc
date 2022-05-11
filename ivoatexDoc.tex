@@ -51,8 +51,9 @@ standards and notes.  \ivoatex\ supports the production of
 PDF and HTML renderings of the documents with sources in
 plain text suitable for version control, as is desirable for normative
 texts.  This note contains a user guide as well as a discussion of 
-\ivoatex's dependencies and its implementation.  It refers to version
-1.1 of the software.  While \ivoatex~is not usually explicitly
+\ivoatex's dependencies and its implementation.  It describes the
+software as of May 2022 (release 1.2).
+While \ivoatex~is not usually explicitly
 installed, it can be downloaded from \url{http://ivoatex.g-vo.org}.
 \end{abstract}
 
@@ -61,7 +62,7 @@ installed, it can be downloaded from \url{http://ivoatex.g-vo.org}.
 
 \ivoatex\ heavily draws from experiences made with previous markup-based
 document preparation systems, in particular LaTeX classes and
-infrastructure created by Sebasti\'en Derriere and Mark Taylor, as well
+infrastructure created by S\'ebastien Derriere and Mark Taylor, as well
 as Paul Harrison's XML-based ivoadoc system.
 
 We thank tth's author, Ian Hutchinson, for generous technical support
@@ -110,14 +111,15 @@ of XML-FO for PDF generation yielded inferior renderings with little
 prospect for improvements by third parties. Also, authors disliked
 writing HTML tags.
 
-Other options considered for source languages included docbook or one of
-the newer lightweight markup languages (ReStructuredText, markdown,
-etc).  In each case, there were concerns either regarding the system's power
+Other options considered for source languages included docbook or 
+a lightweight markup language (ReStructuredText and markdown having
+been serious contenders).  
+In each case, there were concerns either regarding the system's power
 and flexibility or its ease of installation and maintenance.
 
 Meanwhile, several documents -- to mention just a few, SAMP, VOTable,
 and VOUnits -- had successfully used \TeX-based systems typically
-derived from work done in the early 2000s by Sebasti\'en Derriere.
+derived from work done in the early 2000s by S\'ebastien Derriere.
 \ivoatex\ essentially is a generalisation of these standards' formatting
 systems, also inheriting from them the use of the \texttt{make} tool to
 automate workflows.
@@ -128,9 +130,15 @@ with uniform solutions for common problems in standards typesetting.
 
 In the remainder of this document, we give quick-start instructions
 on installation and authoring in sect.~\ref{sect:quick} and continue
-a more thorough discussion of \ivoatex's facilities with a special focus
-on enabling proper automatic production of both HTML and PDF output in
-sect.~\ref{sect:authoring}.  In sect.~\ref{sect:impl}, additional
+with
+a more thorough discussion of \ivoatex's facilities, focusing
+on enabling automatic production of both HTML and PDF output in
+sect.~\ref{sect:authoring}.  Added in this document's version 1.2,
+sect.~\ref{sect:ivoapol} then documents how ivoatex is intended to be
+used on github by the various actors; authors and contributors to IVOA
+standards should at least have a brief look at the recommended
+procedures for them in subsection~\ref{sect:contributing}.
+In sect.~\ref{sect:impl}, additional
 details on the implemenation are given for the benefit of authors
 planning to extend \ivoatex.  We close with a discussion of open issues
 and desirable developments.
@@ -142,9 +150,8 @@ and desirable developments.
 
 \ivoatex\ is designed to work more or less out of the box on common
 POSIX-compliant systems; no non-free software is required for operation.
-Its main uncommon dependency is the tth translator, which is a relatively 
-compact program
-written in highly portable C generated through lex used to translate LaTeX
+Its main uncommon dependency is the tth translator, 
+a program based on lex used to translate LaTeX
 to HTML.  As it is compact and portable, it is delivered with
 \ivoatex~and built on demand.
 Since \ivoatex's tth may at times offer
@@ -160,22 +167,25 @@ hyperref).
 It is recommended to install TeXLive.
 \item A sufficiently capable implementation of \texttt{make}, with GNU's
 implementation recommended.
-\item The XSLT1 processor \texttt{xsltproc} (a different processor can
-be used, but that would probably require custom make rules).
-\item The \texttt{gcc} compiler (another C compiler could be used; the
-central makefile should probably be amended to allow easier changes
-here).
-\item The \texttt{zip} archiver for package generation.
-\item \texttt{imageMagick} and \texttt{ghostscript} if vector graphics
-is to be processed.
-\item \texttt{inkscape} when people need to (re-) build architecture
+\item \texttt{librsvg2-bin} when people need to (re-) build architecture
 diagrams.
-\item \texttt{python3} for automatic submission to the document
-repository, generated content, and other housekeeping that is probably
-not relevant for normal users.
 \item Optionally, \texttt{latexmk}.  If it is available, a lot less
 manual attention is necessary when rerunning LaTeX to update
 bibliographies or document-internal references.
+\item \texttt{python3} for  generated content, and other housekeeping
+that is probably not relevant for most authors.  Editors need it for
+automatic submission to the document repository.
+\item Editors will need the XSLT1 processor 
+\texttt{xsltproc} (a different processor can
+be used, but that would probably require custom make rules) for HTML
+generation.
+\item Editors will need the 
+\texttt{gcc} compiler (another C compiler could be used; the
+central makefile should probably be amended to allow easier changes
+here), and \texttt{flex} for HTML generation.
+\item Editors will need the \texttt{zip} archiver for package generation.
+\item Editors will need \texttt{imageMagick} and \texttt{ghostscript} if 
+vector graphics is to be processed into HTML.
 \end{itemize}
 
 On Windows, it is recommended to run \ivoatex\ within cygwin, where all
@@ -185,8 +195,8 @@ On
 Debian-derived systems, the dependencies should be present after
 running a distribution-specific adaption of
 \begin{lstlisting}[language=sh,basicstyle=\footnotesize]
-apt-get install build-essential texlive-latex-extra zip xsltproc\
-  texlive-bibtex-extra imagemagick ghostscript cm-super inkscape
+apt install build-essential texlive-latex-extra zip xsltproc\
+  texlive-bibtex-extra imagemagick ghostscript cm-super librsvg2-bin
 \end{lstlisting}
 (cm-super contains vector versions of computer modern fonts in T1
 encoding), on RPM-based systems something like
@@ -213,8 +223,10 @@ distribution.\footnote{See
   there is some discussion at
   \url{http://comments.gmane.org/gmane.os.apple.macports.user/21526}.}
 
-To see if the prerequisites are there and compatible with \ivoatex, try
-building an updated version of this document from its github source:
+To see if the full prerequisites are there and compatible with \ivoatex, try
+building an updated version of this document from its github source
+(normal users can go without making HTML and packages, in which case a
+lot of dependencies are not needed):
 \begin{lstlisting}[language=sh,basicstyle=\footnotesize]
 git clone --recurse-submodules https://github.com/ivoa-std/ivoatexDoc
 cd ivoatexDoc
@@ -257,7 +269,8 @@ While it is clearly preferable if authors use IVOA's
 designated common version control system\footnote{Which, despite
 many concerns \citep{book:zuboff}, currently is
 github.com.} from the outset of
-document development, it is possible to operate it locally as well.
+document development, it is possible to build ivoatex documents
+locally as well.
 
 \subsubsection{Installation from Archive (without version control)}
 
@@ -276,11 +289,12 @@ control has been enabled.  These are safe to ignore.
 
 \subsubsection{Installation with git version control}
 
-While it is of course possible to keep \ivoatex\ in checkouts, too,
-the recommended way is to use git's submodule feature; that way, updates
-to later ivoatex versions are simpler and will not pollute the
-document's history; it is also easier to feed back any improvements
-you may make to ivoatex:
+The recommended way to run ivoatex
+is to use git's submodule feature.  This makes it very simple to keep
+ivoatex up to date without polluting the
+document's history, and it makes it straightforward to 
+feed back any improvements you may make to ivoatex.  Hence, you will
+usually start a document like this:
 
 \begin{lstlisting}[language=sh,basicstyle=\footnotesize]
 cd $DOCNAME
@@ -298,18 +312,14 @@ At this point, create a repository in your account using github.com's web
 interface. Use \$DOCNAME as the repository name, and do not choose any
 template; this procedure will leave you at a web page with a URI like
 \nolinkurl{https://github.com/msdemlei/ivoatexDoc}.  
-Opening that URI in a web browser, you can obtain a
+On that page, you can obtain a
 ``Clone URI'', which is what you can push to.  Use the ssh variant,
 i.e., something like \verb|git@github.com:username/docname.git|.
 
 Then, push your newly changed material into this new repository's main
 branch:
 \begin{lstlisting}[language=sh,basicstyle=\footnotesize]
-<<<<<<< HEAD
-git remote add origin <repository URI>
-=======
 git remote add origin <Clone URI>
->>>>>>> f58d567 (Updates for new startup.sh)
 git push --set-upstream origin main
 \end{lstlisting}
 (depending on your git version, you may have to use ``master'' rather
@@ -379,7 +389,7 @@ Group'' rather than ``Working Group'' as the label of the corresponding
 piece of metadata.
 
 Pick one from the following list\footnote{We do not
-enforce the use of a controlled vocabulary here; automatic submission
+enforce the use of the controlled vocabulary.  Automatic submission
 with \texttt{make upload} will fail if you invent something here,
 though.}:
 
@@ -486,9 +496,11 @@ Other makefile targets for author use include:
 \begin{itemize}
 \item \texttt{biblio} updates the bibliography (i.e., runs \BibTeX);
 running this is necessary after one of the bibliography files is updated
-or when a new publication is referenced from the document.
+or when a new publication is referenced from the document.  This target
+is not necessary on machines that have latexmk.
 \item \texttt{forecetex} rebuilds the PDF unconditionally just as if the
-main source had been edited.
+main source had been edited.  This target is probably not useful on
+machines with latexmk.
 \item \texttt{\$DOCNAME.html} generates an HTML rendering of the
 document; at this point, this will typically emit quite a bit of
 spurious diagnostics.  Unfortunately, real problems may hide within.  
@@ -499,7 +511,7 @@ for publication in the IVOA's document repository.   Obviously,
 \texttt{DOCVERSION}, \texttt{DOCTYPE}, and \texttt{DOCDATE} in the
 Makefile should be updated as necessary before this target is built.
 The result is a zip file with a name compliant to the IVOA document
-standards \citep{2017ivoa.spec.0517D}.
+standards \citep{2017ivoa.spec.0517G}.
 \item \texttt{arxiv-upload}  produces a file arxiv-upload.tar.gz for
 the current document.  ArXiv uploads are automatically done by the
 document coordinator for RECs and ENs, and editors \emph{should not} do
@@ -515,8 +527,8 @@ the main ivoatex branch on github.  This will fail if you have
 uncommitted local changes to your ivoatex.
 \item \texttt{\$DOCNAME-draft.pdf} generates a PDF rendering just like a
 simple make, but it will add a watermark against distribution.  This is
-mainly intended for continuous integration workflows.  This only works
-if pdftk is installed.
+mainly intended for continuous integration workflows.  It only works
+if \verb|pdftk| is installed.
 \end{itemize}
 
 \begin{admonition}{Note}
@@ -575,7 +587,7 @@ Also, they are floating insertions.
 lists in the style of HTML \xmlel{dl}, and it will be translated into
 one.  Use \verb|\item[term]| for the term to be defined
 (the construct this item is in is a \texword{bigdescription}).
-\item[\texword{auxilaryurl}] A macro expanding a URL relative to the
+\item[\texword{auxilaryurl}] A macro expanding a path relative to the
 current document to a full URL.  This is discussed more extensively in
 sect.~\ref{sect:links}
 \item[\texword{inlinetable}] This is an environment for showing tables
@@ -639,7 +651,7 @@ case-by-case basis as in
 
 \lstinputlisting[language=tex]{verbatimstyles.tex}
 
-As of version 1.1 of \ivoatex, only \texword{footnotesize} is actually
+As of version 1.2 of \ivoatex, only \texword{footnotesize} is actually
 formatted by the CSS embedded in the HTML document, and we believe
 listings should not be much smaller than that anyway.  As the options
 are translated into CSS classes, it is fairly easy to add further
@@ -653,16 +665,15 @@ The package comes with two default bibliographies:
 
 \begin{itemize}
 \item \texttt{ivoatex/ivoabib.bib} containing records for many publications
-likely to be cited by IVOA documents.  It also contains ``historical''
-records for IVOA standards, the \BibTeX\ tags of which start with
-\texttt{std:}.  Do not use these any more in new documents, they are
-only present in order to not break legacy documents.
+likely to be cited by IVOA documents.  Feel free to add further records
+if they might reasonably be cited by other IVOA documents.
 \item\texttt{ivoatex/docrepo.bib} containing records for IVOA documents
-listed in ADS.  At this writing, this concerns all recommendations.  A
-selection of Notes will be added at a later point.
+listed in ADS, i.e., recommendations, endorsed notes, and a selection of
+other notes.
 \end{itemize}
 
-Changes to the document that introduce new references or changes to the
+Without latexmk, changes to the document that 
+introduce new references or changes to the
 bibliography require that \texttt{make biblio} is run before changes
 become visible.
 
@@ -711,17 +722,24 @@ and saying \texttt{make docrepo.bib}.}.  If works in progress (working
 drafts, proposed recommendations are to be cited, authors should create
 a local bibliography (see below).
 
-If a non-temporary source (like a journal article or a software
-programme) does not already have a record in \texttt{ivoabib.bib},
-authors are welcome to contribute new records there.
+As part of bibliography management, authors should occasonally run
+
+\begin{lstlisting}[language=sh]
+make bib-suggestions
+\end{lstlisting}
+
+This will suggest updates to what IVOA standards the document cites
+based on which documents obsoleted which other documents.  Note that
+these suggestions should not be followed where references actually are
+version-sharp.
 
 \subsubsection{Local Bibliographies}
 
 When a reference is really only relevant to a single document or is
 conceptually non-permanent -- this, in particular, pertains to Working
-Drafts or Proposed Recommendations to be cited -- should be kept in a
-local bibliography.  To enable such a document-local bibliography,
-the bibliography declaration at the foot of the document needs to be
+Drafts or Proposed Recommendations to be cited --, it should be kept in a
+local bibliography.  To instruct \LaTeX{} to use the references there,
+the declaration at the foot of the document needs to be
 changed to
 
 \begin{lstlisting}[language=tex]
@@ -766,7 +784,7 @@ HTML renderings.  The recommended pattern for figures is
 \end{figure}
 \end{lstlisting}
 This gives \LaTeX\ some leeway in placing the figure, defines the image
-size in units of the page width, and centers the image itself.
+size in units of the page width, and centres the image itself.
 
 All bitmap graphics in a document must  be listed in the makefile's
 \texttt{FIGURES} variable.  If they are not, the HTML rendering will be
@@ -775,7 +793,7 @@ broken.
 \subsubsection{Vector Graphics}
 \label{sect:vectorgraphics}
 
-The only vector graphics format supported in \ivoatex\ is PDF.  PDF
+The only vector graphics format well supported in \ivoatex\ is PDF.  PDF
 files can be directly used in \texword{includegraphics}.  The names of
 such figures must be listed in the makefile's \texttt{VECTORFIGURES}
 variable.
@@ -786,7 +804,7 @@ From \texttt{VECTORFIGURES}, \ivoatex\ arranges that, when a PDF figure
 \ivoatex\ using a combination of ghostscript and ImageMagick.  It may
 sometimes be preferable to perform a custom conversion by hand (e.g.,
 more compact representation with bilevel source images), in which case
-the pre-rendered PNG should be included in the version controled
+the pre-rendered PNG should be included in the version controlled
 repository.  This also
 has the advantage that neither ghostscript nor ImageMagick are build
 dependencies of the document.
@@ -883,8 +901,8 @@ The recommended usage is like
 \todo{This is an example for a editorial note}.
 \end{lstlisting}
 
-A rendering of such a to-do note is shown in this paragraph
-\todo{This is an example for a editorial note}. In HTML output,
+A rendering of such a to-do note is shown in this 
+paragraph\todo{This is an example for a editorial note}. In HTML output,
 only the simple \texword{todo} macro without options is supported, and
 text is simply displayed inline right now.  Note in particular that
 todonote's \texword{obeyDraft} and \texword{obeyFinal} package options
@@ -988,7 +1006,7 @@ the columns of \texttt{tap\_schema.tables} will be between the two
 comment lines; re-running \texttt{make generate} will replace that
 content with a refreshed version.
 
-The second command implemented is \texttt{schemadoc} that formats
+The second command implemented is \texttt{schemadoc}. This formats
 documentation for a type in an XML schema file.  This only works
 properly if the XML schema defines a \xmlel{vm:targetPrefix} element in
 the way pioneered by Ray Plante in
@@ -1017,12 +1035,13 @@ fail just because these are unavailable.
 
 We mention in passing that generated content puts potentially executable
 material into documents, which is of course an attack vector for
-malicious software.  However, calling \texttt{make update} is no
-additional security risk, as presumably the author of the makefile is
-identical to the document author, and the makefile can already contain
-arbitrary commands that would be executed on the calling user's behalf.
+malicious software.  However, calling \texttt{make generate} is no
+additional security risk, as whoever can change the document can
+probably change the makefile, too, and the makefile can already contain
+arbitrary commands that will be executed on the calling user's behalf.
 
 \subsection{The Standards Record}
+\label{sect:stdrec}
 
 IVOA recommendations and endorsed notes must be registered using the
 schema from StandardsRegExt \citep{2012ivoa.spec.0508H}.  A major use
@@ -1038,8 +1057,8 @@ records, however, is up to the document editor.  It is strongly
 recommended to keep and maintain the registry record in version control
 alongside with the document source.
 
-To do that, create a standards record from ivoatex's template.  In a
-clone of a repository using ivoatex, you could say:
+To do that, create a standards record from \ivoatex's template.  In a
+clone of a repository using \ivoatex, you could say:
 
 \begin{lstlisting}[language=sh]
 $ cp ivoatex/stdrec-template.xml $DOCNAME.vor
@@ -1052,9 +1071,10 @@ or repeated as required by a particular standard, all other elements
 present should be given at least once.  Please remove the explanatory
 comments as you go. 
 
-A sample record filled out for this document is kept in the subversion
-repository (but not uploaded into the Registry, as Notes do not usually
-require registration).
+This document comes with a filled-out sample for
+itself\footnote{\auxiliaryurl{ivoatexDoc.vor}}.  This is
+not to be uploaded into the Registry, as Notes are not (normally)
+registered.
 
 Most of the metadata to be filled in actually already is available in
 structured form in \ivoatex.  Contributions that help automating
@@ -1063,7 +1083,9 @@ creation and maintenance of the standards record exploiting this are welcome.
 With the upload of a proposed recommendation to the document repository,
 the editor should send the standards record to the registry of
 registries by e-mail\footnote{See \url{http://rofr.ivoa.net/} for
-contact information.} and then re-submit the record with each upload.
+contact information.} and then re-submit the record with each upload or
+a Recommendation or Endorsed Note; interim document states (WD, PR, PEN)
+are not tracked by the Registry.
 
 
 \subsection{Adding tests}
@@ -1156,12 +1178,12 @@ checks for sane results.  An example for how this can be organised can
 be found with the RegTAP
 standard\footnote{\url{https://github.com/ivoa-std/RegTAP}}.  
 
-Again, to keep the number of different tools editors might need low, it
+To control the number of different tools editors might, it
 is recommended to base such code on either STILTS or pyVO
-\citep{2014ascl.soft02004G}, with the latter more likely as you will
-usually need some logic to extract the sample queries.  
+\citep{2014ascl.soft02004G}.
 
-In RegTAP, the test rule looks like this (edited here for clarity):
+In RegTAP, which uses pyVO, the test rule looks like this 
+(edited here for clarity):
 
 \begin{lstlisting}[language=make,basicstyle=\footnotesize]
 # These tests require python3 and pyvo (Debian: python3-pyvo)
@@ -1190,7 +1212,7 @@ def main():
 Some notes on this:
 
 \begin{itemize}
-\item Again, suppress echoing of the make commands by prefixing recipe
+\item Again, suppress echoing of the commands make executes by prefixing recipe
 lines with \verb|@| in order to keep the output tidy.
 
 \item Tests of this kind will almost always use remote network
@@ -1284,49 +1306,66 @@ as defined in the Makefile):
 \item Make sure your ivoatex is up to date; in git checkouts, run
 \verb|make update| (or, equivalently, 
 \verb|git submodule update --remote|).
+
 \item If the document contains generated content, run 
 \verb|make generate| 
 and inspect the subsequent output of 
 \verb|git diff| 
 for anything unexpected.
+
 \item Add the version-specific URL and designation (e.g.,
-``WD-20100801'') using \texword{previousversion} of the currently
+``WD-20100801'') of the currently
 published document (i.e., the version you are replacing) in the document
-header.
+header using \texword{previousversion}.
+
 \item Make sure the changelog appendix lists the major changes since the
 last release of the document; it is probably a good idea to re-scan the
 (generally more extensive) version control history at this point for
 anything that is missing from the in-document changelog.
+
 \item If you have schema files, vocabularies, or the like, make sure
 their version identifiers are what you expect (in particular, for
 recommendations, such version identifier should have no appendices
 of the kind ``-pr1''.  The \verb|AUX_FILES| variable in your Makefile is
 a good start for what files to check.
+
 \item For documents that provide a \verb|test| target, run 
 \verb|make test|; 
 this target must at least not error out and ideally not produce
 any diagnostics.
+
 \item Run \verb|make| and inspect \verb|${DOCNAME}.log|.  There should
 obviously be no undefined citations or internal references.  Also, try
 to avoid overfull hboxes (underfull hboxes are not always avoidable).
+
 \item Have another round of proofreading on \verb|${DOCNAME}.pdf|.  Also
 critically inspect the architecture diagram and the relationships to
 other standards, in particular whether new versions of those have
-reached REC in the meantime.
+reached REC in the meantime. \verb|make bib-suggestions| will do
+that for you in the case of IVOA recommenations.
+
 \item Run \verb|make ${DOCNAME}.html| and briefly review the produced
 HTML file.  Warnings or even error messages in this process are
 (regrettably) still to be expected, so at least superficial human inspection 
 of the output is necessary.
+
 \item Edit the Makefile and update the DOCVERSION, DOCDATE, and DOCTYPE
 variables according to the new document release.
+
+\item If uploading a REC or EN, update (or create) the standards record
+and send it to the RofR (cf.~sect.~\ref{sect:stdrec}).
+
 \item Run \verb|make package|.  If no major problems become visible,
+
 \item run \verb|git commit -am "Preparing for the release"| (the message
 should probably be more specific on \textit{which} release) -- this
 will update the source if VCS information is represented as per
 section~\ref{sect:vcs}.
+
 \item Run \verb|make upload|.  This will ask you to review the document
 metadata in a python dictionary, let you add a note for the document
 coordinator and performs the upload.
+
 \item Review the file \texttt{docrepo-response.html} created in the
 document directory; this contains the raw HTML the uploading script got
 back from the document repository.  We do not automatically check for
@@ -1342,15 +1381,22 @@ specific focus is the development of IVOA standards and related
 documentation.  This section discusses practices and policies put in
 place to ensure transparent and reproducible processes.
 
-\subsection{The ivoa-std Organisation}
+\subsection{The Organisations ivoa and ivoa-std}
 
-Do people always start in private repos?  Do some documents start
-directly in ivoa-std?  Do we have a stance on main vs.~master
-(looks like we're using main).
+As described above, documents will usually start in private
+repositories.  At the latest when documents become become proposed
+endorsed notes or working drafts, they must move into the ivoa-std
+organisation.  Documents there are subject to certain policies ensuring
+a controlled and well-documented evolution (cf.~sect.~\ref{sect:chmgt}).
 
-How does one get one's document into ivoa-std?  And when?
+For now, requests to move into ivoa-std are processed by the chair of
+the TCG; they are usually filed by the chair of the working or interest
+group handling the document.
 
-Who runs ivoa-std?  Are there fallbacks?
+For non-reviewed IVOA material, there is the organisation ivoa.
+Community members are welcome to use it for their VO-related projects
+and in particular Notes.  However, there is no requirement to do that.
+
 
 \subsection{Contributing to a Document}
 \label{sect:contributing}
@@ -1386,19 +1432,19 @@ GitHub documentation
 \url{https://docs.github.com/en/get-started/quickstart/fork-a-repo} for 
 further information.
 
-\item Then, on your local computer, clone the official repository and 
+\item On your local computer, clone the official repository and 
 then add your fork as a remote repository. Note here that we use a 
-read-only clone (git://) from the IVOA repository to avoid the potential
+read-only clone (https://) from the IVOA repository to avoid the potential
 for future mistakes. 
-\begin{lstlisting}[language=sh]
-git clone  --recurse-submodules git@github.com:ivoa-std/standard.git
+\begin{lstlisting}
+git clone  --recurse-submodules https://github.com/ivoa-std/standard.git
 cd standard
 git remote add mine git@github.com:username/standard.git
 git remote -v
 \end{lstlisting}
 
 you should see output similar to 
-\begin{lstlisting}[language=sh]
+\begin{lstlisting}
 mine  git@github.com:username/standard.git (fetch)
 mine  git@github.com:username/standard.git (push)
 origin  git://github.com/ivoa-std/standard.git (fetch)
@@ -1408,18 +1454,22 @@ origin  git://github.com/ivoa-std/standard.git (push)
 
 \item Now to prepare for your change, make sure you are up to date with
 the official repository and create a branch for your work.
-\begin{lstlisting}[language=sh]
+\begin{lstlisting}
 git checkout main
 git pull origin main
 git checkout -b branch-name-for-change
 \end{lstlisting}
+
+IVOA repositories are tranistioning from using ``master'' as the main
+branch to using ``main''.  Depending on the repository, you may need to
+adapt the above commandline accordingly.
 
 \item Once you are happy with the change (and we do recommend building
 the PDF document locally to review it) you can save it to git and send 
 it to your forked repository.  The status command will list everything 
 that has changed and the add command will include it the commit.
 
-\begin{lstlisting}[language=sh]
+\begin{lstlisting}
 git status
 git add standard.tex another-changed-file
 git commit  -m "a  short and useful description of my changes"
@@ -1438,6 +1488,7 @@ once you are ready.
 For future changes repeat steps 3 to 6.
 
 \subsection{Managing Changes}
+\label{sect:chmgt}
 
 This section should be read by persons serving as document editors.
 
@@ -1539,8 +1590,6 @@ dal or reg) and then select the complete group name from the popup. The WG teams
 of the form \verb|ivoa-std/<group>-admin|; the complete list can be found from the top-level 
 \verb|ivoa-std| organization page in the ``Teams'' tab.
 
-\todo{Pat will remove the tcg-members team so that the child wg admin teams are directly visible}
-
 \section{Customisation and Development}
 \label{sect:impl}
 
@@ -1561,7 +1610,7 @@ ignored for HTML generation.
 \item[tthdefs.tex] This file protects its contents from normal \TeX\
 processing by a \verb|\iftth| conditional. This way, only tth sees
 definitions made here. Each special feature defined in \texttt{ivoa.cls}
-has a counterpart here, giving rules for translation to HTML.  This
+has a counterpart here, giving rules for its translation to HTML.  This
 usually encompasses emitting some HTML before and after the argument of
 a TeX construct, where material between \verb|\begin{html}| and
 \verb|\end{html}| is included literally in the HTML document.
@@ -1612,8 +1661,9 @@ For instance, the \texword{nolinkurl}
 macro is not supported natively by tth, and hence in
 \texttt{tthdefs.tex} there is code to the effect of
 \begin{lstlisting}[language=TeX,basicstyle=\footnotesize]
-\newcommand{\nolinkurl}[1]{%
-  \special{html:<span class='nolinkurl'>}#1\special{html:</span>}}
+\def\nolinkurl#1{\special{html:<span class="nolinkurl">}%
+  \verb|#1|%
+  \special{html:</span>}}
 \end{lstlisting}
 
 When a document requires special markup, it is likely that 
@@ -1665,8 +1715,8 @@ example, the source for this document says
 \fi
 \end{lstlisting}
 
-\noindent in its preamble.  With this (and a CSS file that can be inspected in the
-distribution),
+\noindent in its preamble.  With this and a CSS
+file\footnote{\auxiliaryurl{custom.css}},
 
 \begin{lstlisting}
 \comicstuff{If this is comic sans, your web browser is permissive.}
@@ -1675,23 +1725,10 @@ distribution),
 \noindent becomes: 
 \comicstuff{If this is comic sans, your web browser is permissive.}
 
-\subsection{Migration from Ivoadoc}
-
-To ease migration from documents authored in ivoadoc, \ivoatex\ comes
-with an XSLT stylesheet writing out a starting point for an ivoatex
-version.  While many desirable features (e.g., extraction of titlepage
-information) are not implemented and translated tables are incomplete,
-the styleheet should still save time.  For XHTML-compliant ivoadoc
-sources, the stylesheet is used like this:
-
-\begin{lstlisting}[language=sh]
-xsltproc ivoatex/fromivoadoc.xslt ivoadoc_source.html
-\end{lstlisting}
-
 \subsection{Maintenance of the Architecture Diagram}
 
-The IVOA architecture diagram is introduced in
-\citet{2010ivoa.rept.1123A} to
+The IVOA architecture diagram is used by
+\citet{2021ivoa.spec.1101D} to
 visualise the standards landscape.  All IVOA recommendations should have
 an architecture diagram showing the current standard as well as the
 related standards within that landscape.
@@ -1706,18 +1743,24 @@ convenient, unitless floating point numbers, and the conversion of these
 coordinates to physical ones is done at render time.
 
 In the diagram, the standards shoud be limited to the inner box, i.e.,
-the zone between 50, 100 and 750, 500.  Standards boxes are $90\times
-18$ pixels large, which is set in the \texttt{format-standard} template
-in \texttt{make-archdiag.xslt}.  When standard boxes are aligned, the
-vertical distance of their centers should be 25 pixels, the horizontal
+the zone between 50, 100 and 750, 500.  Standards boxes are 
+18 pixels high, which is set in the \texttt{format-standard} template
+in \texttt{make-archdiag.xslt}.  Their widths default to 90 pixels, but
+when you add a box in \verb|archdiag-full.xml|, please take a moment to
+provide a \verb|w| attribute.  See the opening comment of
+\verb|archdiag-full.xml| for a brief howto on having the machine compute
+it.
+
+When standard boxes are aligned, the
+vertical distance of their centres should be 25 pixels, the horizontal
 distance 100 pixels.  To keep the diagram lively, standards not
 obviously grouped with others may be placed ``off-grid''.
 
-The specifications in \texttt{archdiag-full.xml}, as well as those in
-the authors' \texttt{role\_diagram.xml}, are ad-hoc XML interpreted by the
-stylesheet \texttt{ivoatex/make-archdiag.xml}.  That stylesheet is
+The specifications in \verb|archdiag-full.xml|, as well as those in
+the authors' \verb|role_diagram.xml|, are ad-hoc XML interpreted by the
+stylesheet \verb|ivoatex/make-archdiag.xml|.  That stylesheet is
 written such that all three levels of the architecture diagram can be
-created.  The \texttt{Makefile} in \texttt{ivoatex} has the necessary
+created.  The \verb|Makefile| in \verb|ivoatex| has the necessary
 rules, but in contrast to the author rules, they are expected to be
 executed \emph{within} the ivoatex directory.
 
@@ -1753,8 +1796,9 @@ An automated way to maintain the in-document history (i.e., the sequence
 of \verb|\previousversions| in the preamble) and better support to
 generate the change log would be desirable.
 
-The hardcoded and part-manual way to run \LaTeX and \BibTeX~should be
-made smarter, perhaps along the lines of latex-make.
+The biblio and forcetex targets behave in somewhat confusing ways.
+Perhaps we should simply make latexmk a hard dependency and forget about
+them?
 
 \appendix
 \section{Changes from Previous Versions}
@@ -1762,9 +1806,15 @@ made smarter, perhaps along the lines of latex-make.
 \subsection{Changes from Version 1.2}
 
 \begin{itemize}
-\item Changing instructions to use github rather than volute.
-\item Adding policy sections for editors and the IVOA github maintainer
-\item Adding info on a few new ivoatexDoc features (e.g., the ucd macro)
+\item Changed instructions to use github rather than volute.
+\item Added a best practice on contributing via github.
+\item Added policy sections for editors and the IVOA github maintainer.
+\item Added info on a few new ivoatexDoc features (e.g., the ucd macro).
+\item Added a section on writing regression tests.
+\item Now mentioning bib-suggestions for bibliography maintenance.
+\item Expanded the submission checklist.
+\item Dropped a section on ivoadoc migration; it's unlikely anyone
+will need that any more.
 \end{itemize}
 
 \subsection{Changes from Version 1.1}
