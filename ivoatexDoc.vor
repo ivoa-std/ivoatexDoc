@@ -36,8 +36,8 @@
     </creator>
 
 		<!-- this should be the date of the last recommendation -->
-    <date role="update">2016-06-08</date>
-    <version>1.1</version> <!-- the document version -->
+    <date role="update">2022-05-20</date>
+    <version>1.2</version> <!-- the document version -->
     <contact>
       <name>IVOA Committee on Standards and Processes</name>
       <email>stdproc@ivoa.net</email>
@@ -54,8 +54,7 @@
 			PDF and HTML renderings of the documents with sources in
 			plain text suitable for version control, as is desirable for normative
 			texts.  This note contains a user guide as well as a discussion of 
-			IvoaTeX's dependencies and its implementation.  It refers to version
-			1.0 of the software.
+			IvoaTeX's dependencies and its implementation.
     </description>
     <referenceURL>http://ivoa.net/documents/Notes/IVOATex</referenceURL>
     <type>Other</type>
