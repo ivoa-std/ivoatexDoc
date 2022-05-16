@@ -608,7 +608,11 @@ Thus, all \ivoatex\ documents must have an abstract within the
 \subsection{Listings, Verbatim Material}
 
 \ivoatex\ documents should use the \texword{listings} package to include
-source code snippets, XML fragments and the like.  While the ivoa class
+source code snippets, XML fragments and the like.
+Benefits over the \verb|verbatim| environment include easier control over
+font size and formatting, the possibility to include external files,
+and optional language-sensitive pretty-printing.
+While the ivoa class
 requires the package as of version 1.1 (and hence you can use the
 \texword{lstlisting} environment without an explicit
 \texword{usepackage} declaration), you will usually want to configure
@@ -639,8 +643,15 @@ Alternatively, entire files can be included like this:
 \begin{verbatim}
 \lstinputlisting[language=XSLT]{makeutypes.xslt}
 \end{verbatim}
-In the PDF rendering, the listings are pretty-printed.  In the HTML
-rendering, the content is, currently, simply included in \xmlel{pre} elements.
+In the PDF rendering, the listings are pretty-printed
+according to the value of the \verb|language| parameter if one is supplied.
+This can aid comprehension, but in some cases the syntax-sensitive
+processing can end up formatting the content in
+unhelpful or distracting ways,
+so authors should decide whether to supply a language value
+or not, in which case output is simply \verb|monospaced|.
+In the HTML rendering no pretty-printing is attempted in any case,
+and the content is, currently, simply included in \xmlel{pre} elements.
 
 If a more compact rendering of listings is desired, for instance,
 because larger portions of source code are required in the document,
