@@ -32,3 +32,10 @@ ivoatex/Makefile:
 	@echo "*** ivoatex submodule not found.  Initialising submodules."
 	@echo
 	git submodule update --init
+
+STILTS ?= stilts
+
+# This test needs STILTS (http://www.starlink.ac.uk/stilts/)
+test:
+	$(STILTS) votlint votable=fields-container.xml
+
