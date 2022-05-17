@@ -606,6 +606,7 @@ Thus, all \ivoatex\ documents must have an abstract within the
 \texword{abstract} environment.
 
 \subsection{Listings, Verbatim Material}
+\label{sect:verbatim}
 
 \ivoatex\ documents should use the \texword{listings} package to include
 source code snippets, XML fragments and the like.
@@ -1303,6 +1304,43 @@ documentation\footnote{\url{http://www.starlink.ac.uk/stilts/sun256/cmdUsage.htm
 for details.
 In particular it is a good idea to validate all example VOTable documents
 included in document text.
+
+\subsubsection{Testing Examples}
+
+It is important to ensure correctness of literal example text appearing
+in document content;
+mistakes in examples confuse readers,
+often get cut and pasted into operational systems,
+and usually make it necessary to issue a document Erratum at a later date.
+
+Mistakes in hand-written XML are particularly easy to make,
+so providing Makefile tests for XML examples is strongly recommended.
+This can be done by storing XML content in a file separate to the
+document \LaTeX\ file and importing it with the \verb|\lstinputlisting|
+macro as described in sect.~\ref{sect:verbatim}.
+The XML file can then be tested (checked for well-formedness and,
+where possible, validated) from a Makefile test target without reference
+to the \LaTeX\ source.
+
+If the included XML does not represent a complete document, it may be
+necessary to use a container document that includes it using an
+external entity reference defined in an internal DTD subset.
+For example, suppose you want to include the following example text:
+\lstinputlisting[basicstyle=\footnotesize]{fields.xml}
+You can store that text in a file named \verb|fields.xml| and
+include it in the \LaTeX\ source like:
+\begin{lstlisting}[basicstyle=\footnotesize]
+\lstinputlisting{fields.xml}
+\end{lstlisting}
+Then prepare a container document \verb|fields-container.xml| like:
+\lstinputlisting[basicstyle=\footnotesize]{fields-container.xml}
+and include a \verb|test| target in the Makefile like:
+\begin{lstlisting}[basicstyle=\footnotesize]
+# This test needs STILTS
+test:
+        $(STILTS) votlint votable=fields-container.xml
+\end{lstlisting}
+
 
 \subsection{Submitting a Document}
 

@@ -1,0 +1,9 @@
+<?xml version='1.0'?>
+<!DOCTYPE VOTABLE [ <!ENTITY fields SYSTEM 'fields.xml'> ]>
+<VOTABLE version='1.4' xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
+  <RESOURCE>
+    <TABLE>
+      &fields;
+    </TABLE>
+  </RESOURCE>
+</VOTABLE>

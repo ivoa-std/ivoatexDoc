@@ -14,7 +14,8 @@ DOCTYPE = NOTE
 
 # Source files for the TeX document (but the main file must always
 # be called $(DOCNAME).tex
-SOURCES = $(DOCNAME).tex svnsubstitution.tex verbatimstyles.tex gitmeta.tex
+SOURCES = $(DOCNAME).tex svnsubstitution.tex verbatimstyles.tex gitmeta.tex \
+          fields.xml fields-container.xml
 
 # List of pixel image files to be included in submitted package 
 FIGURES = triangle_workflow.png
@@ -32,3 +33,10 @@ ivoatex/Makefile:
 	@echo "*** ivoatex submodule not found.  Initialising submodules."
 	@echo
 	git submodule update --init
+
+STILTS ?= stilts
+
+# This test needs STILTS (http://www.starlink.ac.uk/stilts/)
+test:
+	$(STILTS) votlint votable=fields-container.xml
+
