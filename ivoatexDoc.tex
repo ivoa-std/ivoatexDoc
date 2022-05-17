@@ -5,7 +5,7 @@
 \usepackage{listings}
 \lstloadlanguages{sh,make,[latex]tex}
 \lstset{flexiblecolumns=true,numberstyle=\small,showstringspaces=False,
-  identifierstyle=\texttt,defaultdialect=[latex]tex,language=tex}
+  identifierstyle=\texttt}
 
 \usepackage{todonotes}
 
@@ -194,13 +194,13 @@ dependencies can easily be installed from cygwin's repository.
 On
 Debian-derived systems, the dependencies should be present after
 running a distribution-specific adaption of
-\begin{lstlisting}[language=sh,basicstyle=\footnotesize]
+\begin{lstlisting}[basicstyle=\footnotesize]
 apt install build-essential texlive-latex-extra zip xsltproc\
   texlive-bibtex-extra imagemagick ghostscript cm-super librsvg2-bin
 \end{lstlisting}
 (cm-super contains vector versions of computer modern fonts in T1
 encoding), on RPM-based systems something like
-\begin{lstlisting}[language=sh]
+\begin{lstlisting}
 yum install texlive-scheme-full libxslt make gcc zip\
   ImageMagick ghostscript
 \end{lstlisting}
@@ -208,7 +208,7 @@ should pull in everything that is necessary.
 
 With OS X, a convenient way to obtain the dependencies is to install
 MacPorts\footnote{\url{https://www.macports.org/}} and then run
-\begin{lstlisting}[language=sh]
+\begin{lstlisting}
 port install ImageMagick  libxslt ghostscript +full
 \end{lstlisting}
 The canonical OS\,X \TeX\ distribution is the Mac\TeX\ version of
@@ -227,7 +227,7 @@ To see if the full prerequisites are there and compatible with \ivoatex, try
 building an updated version of this document from its github source
 (normal users can go without making HTML and packages, in which case a
 lot of dependencies are not needed):
-\begin{lstlisting}[language=sh,basicstyle=\footnotesize]
+\begin{lstlisting}[basicstyle=\footnotesize]
 git clone --recurse-submodules https://github.com/ivoa-std/ivoatexDoc
 cd ivoatexDoc
 make biblio   # update the bibliography
@@ -252,7 +252,7 @@ it is fairly compact, having one copy per document seems acceptable.
 So, the first step to use \ivoatex\ is to create a development
 directory:
 
-\begin{lstlisting}[language=sh]
+\begin{lstlisting}
 export DOCNAME=SampleDoc
 # this would be your document's short name, e.g., RegTAP, SIAv2)
 mkdir $DOCNAME
@@ -277,7 +277,7 @@ locally as well.
 Without version control, it is sufficient to obtain \ivoatex\ from a
 distribution site and unpack it into the future document directory:
 
-\begin{lstlisting}[language=sh]
+\begin{lstlisting}
 cd $DOCNAME
 curl http://ivoatex.g-vo.org/ivoatex-latest.tar.gz \
   | tar -xvzf -k
@@ -296,7 +296,7 @@ document's history, and it makes it straightforward to
 feed back any improvements you may make to ivoatex.  Hence, you will
 usually start a document like this:
 
-\begin{lstlisting}[language=sh,basicstyle=\footnotesize]
+\begin{lstlisting}[basicstyle=\footnotesize]
 cd $DOCNAME
 git init
 git submodule add https://github.com/ivoa-std/ivoatex
@@ -318,7 +318,7 @@ i.e., something like \verb|git@github.com:username/docname.git|.
 
 Then, push your newly changed material into this new repository's main
 branch:
-\begin{lstlisting}[language=sh,basicstyle=\footnotesize]
+\begin{lstlisting}[basicstyle=\footnotesize]
 git remote add origin <Clone URI>
 git push --set-upstream origin main
 \end{lstlisting}
@@ -433,7 +433,7 @@ unusual.
 To prepare an architecture diagram, first obtain the full description of
 all IVOA standards:
 
-\begin{lstlisting}[language=sh]
+\begin{lstlisting}
 cp ivoatex/archdiag-full.xml role_diagram.xml 
 git add role_diagram.xml
 \end{lstlisting}
@@ -452,7 +452,7 @@ standards not mentioned in
 \xmlel{thisrec} element for the current standard.  An architecture
 diagram for VOResource would thus be specified like this:
 
-\begin{lstlisting}[language=XML,basicstyle=\footnotesize]
+\begin{lstlisting}[basicstyle=\footnotesize]
 <archdiag xmlns="http://ivoa.net/archdiag">
   <thisrec name="VOResource" x="55" y="155"/>
   <rec name="RegTAP" x="55" y="180"/>
@@ -577,7 +577,7 @@ element or attribute name.
 displayed boxes, intended for notes, tips, and the like.  
 It takes an argument giving the head of the box, e.g.,
 
-\begin{lstlisting}[language=TeX]
+\begin{lstlisting}
 \begin{admonition}{Note}
 Admonitions should not be overdone.  
 Also, they are floating insertions.
@@ -608,14 +608,18 @@ Thus, all \ivoatex\ documents must have an abstract within the
 \subsection{Listings, Verbatim Material}
 
 \ivoatex\ documents should use the \texword{listings} package to include
-source code snippets, XML fragments and the like.  While the ivoa class
+source code snippets, XML fragments and the like.
+Benefits over the \verb|verbatim| environment include easier control over
+font size and formatting, the possibility to include external files,
+and optional language-sensitive pretty-printing.
+While the ivoa class
 requires the package as of version 1.1 (and hence you can use the
 \texword{lstlisting} environment without an explicit
 \texword{usepackage} declaration), you will usually want to configure
 the package in the document preamble (i.e., before its
 \verb|\begin{document}|), perhaps like this:
 
-\begin{lstlisting}[language=TeX]
+\begin{lstlisting}
 \lstloadlanguages{XML,sh}
 \lstset{flexiblecolumns=true,tagstyle=\ttfamily,
   showstringspaces=False}
@@ -639,8 +643,15 @@ Alternatively, entire files can be included like this:
 \begin{verbatim}
 \lstinputlisting[language=XSLT]{makeutypes.xslt}
 \end{verbatim}
-In the PDF rendering, the listings are pretty-printed.  In the HTML
-rendering, the content is, currently, simply included in \xmlel{pre} elements.
+In the PDF rendering, the listings are pretty-printed
+according to the value of the \verb|language| parameter if one is supplied.
+This can aid comprehension, but in some cases the syntax-sensitive
+processing can end up formatting the content in
+unhelpful or distracting ways,
+so authors should decide whether to supply a language value
+or not, in which case output is simply \verb|monospaced|.
+In the HTML rendering no pretty-printing is attempted in any case,
+and the content is, currently, simply included in \xmlel{pre} elements.
 
 If a more compact rendering of listings is desired, for instance,
 because larger portions of source code are required in the document,
@@ -699,7 +710,7 @@ standard once with a citation and then use that short name in the
 remainder of the document to have expressive texts not overciting. For
 instance,
 
-\begin{lstlisting}[language=tex]
+\begin{lstlisting}
 IVOA Identifiers \citep{2016ivoa.spec.0523D} introduces URIs to
 reference Registry records, which are typically transmitted in
 VOResource \citep{2018ivoa.spec.0625P} format.  Both VOResource 
@@ -724,7 +735,7 @@ a local bibliography (see below).
 
 As part of bibliography management, authors should occasonally run
 
-\begin{lstlisting}[language=sh]
+\begin{lstlisting}
 make bib-suggestions
 \end{lstlisting}
 
@@ -742,7 +753,7 @@ local bibliography.  To instruct \LaTeX{} to use the references there,
 the declaration at the foot of the document needs to be
 changed to
 
-\begin{lstlisting}[language=tex]
+\begin{lstlisting}
 \bibliography{ivoatex/ivoabib,ivoatex/docrepo,localrefs}
 \end{lstlisting}
 
@@ -963,7 +974,7 @@ the closing line is replaced by the output of the command.
 For instance, in the following snippet the material between the comments
 was inserted by \texttt{make generate}:
 
-\begin{lstlisting}[language=TeX]
+\begin{lstlisting}
 % GENERATED: echo This is generated content
 This is generated content
 
@@ -990,13 +1001,13 @@ live \texttt{TAP\_SCHEMA}.  The access URL of the
 live TAP service must be specified in an environment variable TAPURL in
 the Makefile, for instance
 
-\begin{lstlisting}[language=sh]
+\begin{lstlisting}
 TAPURL=http://dc.g-vo.org/tap
 \end{lstlisting}
 
 Then, in the document one can use the structured comment
 
-\begin{lstlisting}[language=TeX]
+\begin{lstlisting}
 % GENERATED: !taptable tap_schema.tables
 % /GENERATED
 \end{lstlisting}
@@ -1015,7 +1026,7 @@ VOResource.\footnote{See
 schemadoc.}
 With an appropriately instrumented schema, a document can say
 
-\begin{lstlisting}[language=TeX]
+\begin{lstlisting}
 % GENERATED: !schemadoc SchemaSource.xsd MyType
 % /GENERATED
 \end{lstlisting}
@@ -1060,7 +1071,7 @@ alongside with the document source.
 To do that, create a standards record from \ivoatex's template.  In a
 clone of a repository using \ivoatex, you could say:
 
-\begin{lstlisting}[language=sh]
+\begin{lstlisting}
 $ cp ivoatex/stdrec-template.xml $DOCNAME.vor
 $ git add $DOCNAME.vor
 \end{lstlisting}
@@ -1125,7 +1136,7 @@ The VOResource
 standard\footnote{\url{https://github.com/ivoa-std/VOResource}} shows an
 example (edited here for clarity):
 
-\begin{lstlisting}[language=make,basicstyle=\footnotesize]
+\begin{lstlisting}[basicstyle=\footnotesize]
 STILTS ?= java -jar stilts.jar
 
 # These tests need STILTS >=3.4-4
@@ -1143,7 +1154,7 @@ Some brief explanations are in order:
 execution path if necessary (e.g., because of out-of-date system
 packages or custom paths) like this:
 
-\begin{lstlisting}[language=sh]
+\begin{lstlisting}
 STILTS=stilts-beta make test
 \end{lstlisting}
 
@@ -1185,7 +1196,7 @@ is recommended to base such code on either STILTS or pyVO
 In RegTAP, which uses pyVO, the test rule looks like this 
 (edited here for clarity):
 
-\begin{lstlisting}[language=make,basicstyle=\footnotesize]
+\begin{lstlisting}[basicstyle=\footnotesize]
 # These tests require python3 and pyvo (Debian: python3-pyvo)
 test:
   @TAP_ACCESS_URL=http://dc.g-vo.org/tap python3 check_examples.py
@@ -1258,7 +1269,7 @@ An example for this type of check is again given in the VOResource
 standard\footnote{\url{https://github.com/ivoa-std/VOResource}}, where
 the test rule then would be:
 
-\begin{lstlisting}[language=make,basicstyle=\footnotesize]
+\begin{lstlisting}[basicstyle=\footnotesize]
 # These tests require xmlstarlet
 test:
   @sh test-assertions.sh
@@ -1272,7 +1283,7 @@ where the authors make sure that if a Recommendation is being published,
 the schema version tag actually is ``clean'', such a shell function
 takes a shape like:
 
-\begin{lstlisting}[language=sh,basicstyle=\footnotesize]
+\begin{lstlisting}[basicstyle=\footnotesize]
 assert_schema_version_for_rec() {
   # make sure the schema version has no tags if this is a REC
   if xmlstarlet sel -T -t -m "xs:schema" -v "@version"  $SCHEMA \
@@ -1637,14 +1648,14 @@ Thus, whenever a document has multiple
 instances of such values, authors should define macros and use these.
 For instance, RegTAP deals with lots of concepts from its own
 database schema and hence has
-\begin{lstlisting}[language=TeX]
+\begin{lstlisting}
 \definecolor{rtcolor}{rgb}{0.15,0.4,0.3}
 \newcommand{\rtent}[1]{\texttt{\color{rtcolor} #1}}
 \end{lstlisting}
 in its document preamble to
 define markup for ``RegTAP entity'', whereas
 this note, as it mentions many words with a special meaning to \TeX, has
-\begin{lstlisting}[language=TeX]
+\begin{lstlisting}
 \definecolor{texcolor}{rgb}{0.4,0.1,0.1}
 \newcommand{\texword}[1]{\texttt{\color{texcolor} #1}}
 \end{lstlisting}
@@ -1660,7 +1671,7 @@ general need specific handling, and sometimes support is somewhat spotty.
 For instance, the \texword{nolinkurl}
 macro is not supported natively by tth, and hence in
 \texttt{tthdefs.tex} there is code to the effect of
-\begin{lstlisting}[language=TeX,basicstyle=\footnotesize]
+\begin{lstlisting}[basicstyle=\footnotesize]
 \def\nolinkurl#1{\special{html:<span class="nolinkurl">}%
   \verb|#1|%
   \special{html:</span>}}
@@ -1767,7 +1778,7 @@ executed \emph{within} the ivoatex directory.
 So, to create the full versions of the three levels of the architecture
 diagram, do something like
 
-\begin{lstlisting}[language=sh]
+\begin{lstlisting}
 cd ivoatex
 make archdiag-l0.svg
 make archdiag-l1.svg
