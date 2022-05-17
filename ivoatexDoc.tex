@@ -498,7 +498,7 @@ Other makefile targets for author use include:
 running this is necessary after one of the bibliography files is updated
 or when a new publication is referenced from the document.  This target
 is not necessary on machines that have latexmk.
-\item \texttt{forecetex} rebuilds the PDF unconditionally just as if the
+\item \texttt{forcetex} rebuilds the PDF unconditionally just as if the
 main source had been edited.  This target is probably not useful on
 machines with latexmk.
 \item \texttt{\$DOCNAME.html} generates an HTML rendering of the
@@ -731,7 +731,7 @@ Recommendations should generally be cited in the last version available
 at the time of writing\footnote{If a published recommendation is missing
 in the bibliography, this can be fixed by cd-ing into the ivoatex folder
 and saying \texttt{make docrepo.bib}.}.  If works in progress (working
-drafts, proposed recommendations are to be cited, authors should create
+drafts, proposed recommendations) are to be cited, authors should create
 a local bibliography (see below).
 
 As part of bibliography management, authors should occasonally run
@@ -1190,7 +1190,7 @@ checks for sane results.  An example for how this can be organised can
 be found with the RegTAP
 standard\footnote{\url{https://github.com/ivoa-std/RegTAP}}.  
 
-To control the number of different tools editors might, it
+To control the number of different tools editors might require, it
 is recommended to base such code on either STILTS or pyVO
 \citep{2014ascl.soft02004G}.
 
@@ -1509,7 +1509,7 @@ git pull origin main
 git checkout -b branch-name-for-change
 \end{lstlisting}
 
-IVOA repositories are tranistioning from using ``master'' as the main
+IVOA repositories are transitioning from using ``master'' as the main
 branch to using ``main''.  Depending on the repository, you may need to
 adapt the above commandline accordingly.
 
@@ -1612,7 +1612,7 @@ now be forked from ivoa-std in order to enable future pull requests
 \end{enumerate}
 
 Branch protection rules are set up in the ``Settings'' tab of the repository (top right). 
-On the left side of the settings page, chose ``Branches'' and either edit the \verb|main|
+On the left side of the settings page, choose ``Branches'' and either edit the \verb|main|
 branch rules (if present) or add a new rule (if not). The standard set of rules that are
 suitable for most development are:
 
