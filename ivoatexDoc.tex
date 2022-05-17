@@ -5,7 +5,7 @@
 \usepackage{listings}
 \lstloadlanguages{sh,make,[latex]tex}
 \lstset{flexiblecolumns=true,numberstyle=\small,showstringspaces=False,
-  identifierstyle=\texttt}
+  identifierstyle=\texttt,defaultdialect=[latex]tex}
 
 \usepackage{todonotes}
 
@@ -825,7 +825,7 @@ dependencies of the document.
 
 In tables, rules should be used sparingly.  The standard pattern for tables is
 something like
-\begin{lstlisting}
+\begin{lstlisting}[language=tex]
 \begin{table}[th]
 \begin{tabular}{p{0.35\textwidth}p{0.64\textwidth}}
 \sptablerule
