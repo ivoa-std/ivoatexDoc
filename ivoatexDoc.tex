@@ -5,7 +5,7 @@
 \usepackage{listings}
 \lstloadlanguages{sh,make,[latex]tex}
 \lstset{flexiblecolumns=true,numberstyle=\small,showstringspaces=False,
-  identifierstyle=\texttt}
+  identifierstyle=\texttt,defaultdialect=[latex]tex}
 
 \usepackage{todonotes}
 
@@ -133,7 +133,7 @@ on installation and authoring in sect.~\ref{sect:quick} and continue
 with
 a more thorough discussion of \ivoatex's facilities, focusing
 on enabling automatic production of both HTML and PDF output in
-sect.~\ref{sect:authoring}.  Added in this document's version 1.2,
+sect.~\ref{sect:authoring}.  Added in this document's version 1.3,
 sect.~\ref{sect:ivoapol} then documents how ivoatex is intended to be
 used on github by the various actors; authors and contributors to IVOA
 standards should at least have a brief look at the recommended
@@ -498,7 +498,7 @@ Other makefile targets for author use include:
 running this is necessary after one of the bibliography files is updated
 or when a new publication is referenced from the document.  This target
 is not necessary on machines that have latexmk.
-\item \texttt{forecetex} rebuilds the PDF unconditionally just as if the
+\item \texttt{forcetex} rebuilds the PDF unconditionally just as if the
 main source had been edited.  This target is probably not useful on
 machines with latexmk.
 \item \texttt{\$DOCNAME.html} generates an HTML rendering of the
@@ -730,8 +730,8 @@ Identifiers are based on W3C standards.
 Recommendations should generally be cited in the last version available
 at the time of writing\footnote{If a published recommendation is missing
 in the bibliography, this can be fixed by cd-ing into the ivoatex folder
-and saying \texttt{make docrepo.bib}.}.  If works in progress (working
-drafts, proposed recommendations are to be cited, authors should create
+and saying \texttt{make docrepo.bib}.}.  If works in progress (Working
+Drafts, Proposed Recommendations) are to be cited, authors should create
 a local bibliography (see below).
 
 As part of bibliography management, authors should occasonally run
@@ -825,7 +825,7 @@ dependencies of the document.
 
 In tables, rules should be used sparingly.  The standard pattern for tables is
 something like
-\begin{lstlisting}
+\begin{lstlisting}[language=tex]
 \begin{table}[th]
 \begin{tabular}{p{0.35\textwidth}p{0.64\textwidth}}
 \sptablerule
@@ -1190,7 +1190,7 @@ checks for sane results.  An example for how this can be organised can
 be found with the RegTAP
 standard\footnote{\url{https://github.com/ivoa-std/RegTAP}}.  
 
-To control the number of different tools editors might, it
+To control the number of different tools editors might require, it
 is recommended to base such code on either STILTS or pyVO
 \citep{2014ascl.soft02004G}.
 
@@ -1433,8 +1433,8 @@ place to ensure transparent and reproducible processes.
 \subsection{The Organisations ivoa and ivoa-std}
 
 As described above, documents will usually start in private
-repositories.  At the latest when documents become become proposed
-endorsed notes or working drafts, they must move into the ivoa-std
+repositories.  At the latest when documents become become Proposed
+Endorsed Notes or Working Drafts, they must move into the ivoa-std
 organisation.  Documents there are subject to certain policies ensuring
 a controlled and well-documented evolution (cf.~sect.~\ref{sect:chmgt}).
 
@@ -1509,7 +1509,7 @@ git pull origin main
 git checkout -b branch-name-for-change
 \end{lstlisting}
 
-IVOA repositories are tranistioning from using ``master'' as the main
+IVOA repositories are transitioning from using ``master'' as the main
 branch to using ``main''.  Depending on the repository, you may need to
 adapt the above commandline accordingly.
 
@@ -1612,7 +1612,7 @@ now be forked from ivoa-std in order to enable future pull requests
 \end{enumerate}
 
 Branch protection rules are set up in the ``Settings'' tab of the repository (top right). 
-On the left side of the settings page, chose ``Branches'' and either edit the \verb|main|
+On the left side of the settings page, choose ``Branches'' and either edit the \verb|main|
 branch rules (if present) or add a new rule (if not). The standard set of rules that are
 suitable for most development are:
 
