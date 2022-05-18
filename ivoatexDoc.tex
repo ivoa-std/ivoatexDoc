@@ -53,8 +53,12 @@ plain text suitable for version control, as is desirable for normative
 texts.  This note contains a user guide as well as a discussion of 
 \ivoatex's dependencies and its implementation.  It describes the
 software as of May 2022 (release 1.2).
-While \ivoatex~is not usually explicitly
-installed, it can be downloaded from \url{http://ivoatex.g-vo.org}.
+\ivoatex{} has special facilities for the git version control system,
+and the default deployment uses github infrastructure.  Since at this
+point github is the IVOA's designated version control system, this note
+also contains material on the policies effective in the IVOA's use of
+github.
+
 \end{abstract}
 
 
@@ -930,16 +934,8 @@ manageable solution to the problem such packages attempt to solve.
 \label{sect:vcs}
 
 It is recommended to include basic metadata obtained from the version
-control system into \ivoatex~Documents where available.  Basic support
-for subversion and git is built into \ivoatex, based on some sort
-of keyword substitution.  The underlying mechanisms, as well as
-the information conveyed, is rather different between git and
-subversion.  We cover the git case first; the part about how this was
-done in subversion is probably only of historical interest now.
-
-\subsubsection{VCS Metadata in Git}
-
-To enable in-document VCS tracking in git, two steps are necessary:
+control system into \ivoatex~Documents where available.  
+To enable in-document VCS metadata in git, two steps are necessary:
 
 \begin{enumerate}
 \item Add \texttt{gitmeta.tex} to your \texttt{SOURCES} in the makefile.
