@@ -1004,10 +1004,7 @@ TAPURL=http://dc.g-vo.org/tap
 
 Then, in the document one can use the structured comment
 
-\begin{lstlisting}
-% GENERATED: !taptable tap_schema.tables
-% /GENERATED
-\end{lstlisting}
+\lstinputlisting{tapgen.tex}
 
 After a \texttt{make generate}, the LaTeX source for a table describing
 the columns of \texttt{tap\_schema.tables} will be between the two
@@ -1023,10 +1020,7 @@ VOResource.\footnote{See
 schemadoc.}
 With an appropriately instrumented schema, a document can say
 
-\begin{lstlisting}
-% GENERATED: !schemadoc SchemaSource.xsd MyType
-% /GENERATED
-\end{lstlisting}
+\lstinputlisting{schemadoc.tex}
 
 to produce documentation for the schema type \xmlel{MyType} within
 the XML schema file \texttt{SchemaSource.xsd}.
