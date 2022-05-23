@@ -53,8 +53,12 @@ plain text suitable for version control, as is desirable for normative
 texts.  This note contains a user guide as well as a discussion of 
 \ivoatex's dependencies and its implementation.  It describes the
 software as of May 2022 (release 1.2).
-While \ivoatex~is not usually explicitly
-installed, it can be downloaded from \url{http://ivoatex.g-vo.org}.
+\ivoatex{} has special facilities for the git version control system,
+and the default deployment uses github infrastructure.  Since at this
+point github is the IVOA's designated version control system, this note
+also contains material on the policies effective in the IVOA's use of
+github.
+
 \end{abstract}
 
 
@@ -930,16 +934,8 @@ manageable solution to the problem such packages attempt to solve.
 \label{sect:vcs}
 
 It is recommended to include basic metadata obtained from the version
-control system into \ivoatex~Documents where available.  Basic support
-for subversion and git is built into \ivoatex, based on some sort
-of keyword substitution.  The underlying mechanisms, as well as
-the information conveyed, is rather different between git and
-subversion.  We cover the git case first; the part about how this was
-done in subversion is probably only of historical interest now.
-
-\subsubsection{VCS Metadata in Git}
-
-To enable in-document VCS tracking in git, two steps are necessary:
+control system into \ivoatex~Documents where available.  
+To enable in-document VCS metadata in git, two steps are necessary:
 
 \begin{enumerate}
 \item Add \texttt{gitmeta.tex} to your \texttt{SOURCES} in the makefile.
@@ -1422,27 +1418,31 @@ errors yet, so again human attention is required.
 \end{enumerate}
 
 
-\section{Developing IVOA Documents}
+\section{Developing IVOA Documents on Github}
 \label{sect:ivoapol}
 
 While \ivoatex\ can of course be used in private repositories, its
 specific focus is the development of IVOA standards and related
 documentation.  This section discusses practices and policies put in
-place to ensure transparent and reproducible processes.
+place to ensure transparent and reproducible processes.  This is, by
+necessity, closely tied to the IVOA's designated version control system,
+github.
+
 
 \subsection{The Organisations ivoa and ivoa-std}
 
 As described above, documents will usually start in private
 repositories.  At the latest when documents become become Proposed
 Endorsed Notes or Working Drafts, they must move into the ivoa-std
-organisation.  Documents there are subject to certain policies ensuring
+organisation on github.  
+Documents there are subject to certain policies ensuring
 a controlled and well-documented evolution (cf.~sect.~\ref{sect:chmgt}).
 
 For now, requests to move into ivoa-std are processed by the chair of
 the TCG; they are usually filed by the chair of the working or interest
 group handling the document.
 
-For non-reviewed IVOA material, there is the organisation ivoa.
+For non-reviewed IVOA material, there is the github organisation ivoa.
 Community members are welcome to use it for their VO-related projects
 and in particular Notes.  However, there is no requirement to do that.
 
@@ -1450,8 +1450,9 @@ and in particular Notes.  However, there is no requirement to do that.
 \subsection{Contributing to a Document}
 \label{sect:contributing}
 
-IVOA repositories for standards and notes follow many open source 
-projects in using a fork and pull request workflow for contributing 
+IVOA repositories for standards and notes on github follow many 
+open source projects on that platform in using a fork 
+and pull request workflow for contributing 
 updates. This allows open contributions whilst protecting the repository
 integrity. All contributors, whether document editors or first time 
 contributors, follow this same process. All pull requests need to be 
