@@ -1,7 +1,7 @@
 This is the documentation for the IVOA authoring system 
 `ivoatex <https://ivoatex.g-vo.org>`_  
 
-See https://github.com/ivoa-std/ for how and where it is begin used
+See https://github.com/ivoa-std/ for how and where it is being used
 (in addition to authoring this document).
 
 The `released versions <https://ivoa.net/documents/Notes/IVOATex/>`_

@@ -37,6 +37,8 @@
 
 \editor{Markus Demleitner}
 
+\previousversion[http://www.ivoa.net/documents/ivoatexDoc/20180814]{Version
+1.2}
 \previousversion[http://www.ivoa.net/documents/ivoatexDoc/20160430]{Version
 1.1}
 \previousversion[http://www.ivoa.net/documents/ivoatexDoc/20150129]{Version
@@ -176,7 +178,7 @@ diagrams.
 \item Optionally, \texttt{latexmk}.  If it is available, a lot less
 manual attention is necessary when rerunning LaTeX to update
 bibliographies or document-internal references.
-\item \texttt{python3} for  generated content, and other housekeeping
+\item \texttt{python3} for  generated content and other housekeeping
 that is probably not relevant for most authors.  Editors need it for
 automatic submission to the document repository.
 \item Editors will need the XSLT1 processor 
@@ -192,21 +194,22 @@ here), and \texttt{flex} for HTML generation.
 vector graphics is to be processed into HTML.
 \end{itemize}
 
-On Windows, it is recommended to run \ivoatex\ within cygwin, where all
-dependencies can easily be installed from cygwin's repository.  
+Based on limited experience, we believe the easiest way to run
+\ivoatex{} on Windows is through cygwin, which also should make make the
+installation of the dependencies reasonably simple.
 
 On
 Debian-derived systems, the dependencies should be present after
 running a distribution-specific adaption of
 \begin{lstlisting}[basicstyle=\footnotesize]
-apt install build-essential texlive-latex-extra zip xsltproc\
+apt install build-essential texlive-latex-extra zip xsltproc git\
   texlive-bibtex-extra imagemagick ghostscript cm-super librsvg2-bin
 \end{lstlisting}
 (cm-super contains vector versions of computer modern fonts in T1
 encoding), on RPM-based systems something like
 \begin{lstlisting}
 yum install texlive-scheme-full libxslt make gcc zip\
-  ImageMagick ghostscript
+  ImageMagick ghostscript git
 \end{lstlisting}
 should pull in everything that is necessary.
 
@@ -269,14 +272,14 @@ assume that, too).  A name
 like \texttt{SimpleDALRegExt} probably marks the upper limit in terms of
 length.
 
-While it is clearly preferable if authors use IVOA's 
+While it is clearly preferable if authors use the IVOA's 
 designated common version control system\footnote{Which, despite
 many concerns \citep{book:zuboff}, currently is
 github.com.} from the outset of
 document development, it is possible to build ivoatex documents
 locally as well.
 
-\subsubsection{Installation from Archive (without version control)}
+\subsubsection{Installation from Archive (not recommended)}
 
 Without version control, it is sufficient to obtain \ivoatex\ from a
 distribution site and unpack it into the future document directory:
@@ -293,7 +296,7 @@ control has been enabled.  These are safe to ignore.
 
 \subsubsection{Installation with git version control}
 
-The recommended way to run ivoatex
+The recommended way to run \ivoatex{}
 is to use git's submodule feature.  This makes it very simple to keep
 ivoatex up to date without polluting the
 document's history, and it makes it straightforward to 
@@ -326,7 +329,8 @@ branch:
 git remote add origin <Clone URI>
 git push --set-upstream origin main
 \end{lstlisting}
-(depending on your git version, you may have to use ``master'' rather
+(depending on your git version and configuration, 
+you may have to use ``master'' rather
 than ``main'').
 
 \subsubsection{Beginning the document}
@@ -458,9 +462,9 @@ diagram for VOResource would thus be specified like this:
 
 \begin{lstlisting}[basicstyle=\footnotesize]
 <archdiag xmlns="http://ivoa.net/archdiag">
-  <thisrec name="VOResource" x="55" y="155"/>
-  <rec name="RegTAP" x="55" y="180"/>
-  <rec name="RegistryInterface" x="55" y="205"/>
+	<thisrec name="VOResource" x="64.5" y="155" w="71"/>
+	<rec name="RegTAP" x="76" y="180" w="48"/>
+	<rec name="Reg.Intf" x="75" y="205" w="50"/>
   <!-- and a few more -->
 </archdiag>
 \end{lstlisting}
@@ -908,7 +912,7 @@ editorial comments of the type ``Need to clarify'' or ``Specification
 incomplete''.  We recommend to use the todonotes package for such
 pieces of text\footnote{Full documentation is available at
 \url{http://www.tex.ac.uk/CTAN/macros/latex/contrib/todonotes/todonotes.pdf}.}.
-The recommended usage is like
+It would be used like this:
 \begin{lstlisting}
 ...
 \usepackage{todonotes}
@@ -945,7 +949,7 @@ LaTeX source (right below \verb|\input tthdefs| is a good place).
 
 This will then add the commit identifier and a time stamp to the title
 page of the document.  Patches to make ivoatex include some sensible URL
-(perhaps the remote origin URL if it exists) are solicited.
+at which to look for a source repository might be found are welcome.
 
 
 \subsection{Generated Content}
@@ -1019,9 +1023,7 @@ VOResource.\footnote{See
 \url{https://github.com/ivoa-std/TAPRegExt} for a document using
 schemadoc.}
 With an appropriately instrumented schema, a document can say
-
 \lstinputlisting{schemadoc.tex}
-
 to produce documentation for the schema type \xmlel{MyType} within
 the XML schema file \texttt{SchemaSource.xsd}.
 
@@ -1364,8 +1366,8 @@ anything that is missing from the in-document changelog.
 
 \item If you have schema files, vocabularies, or the like, make sure
 their version identifiers are what you expect (in particular, for
-recommendations, such version identifier should have no appendices
-of the kind ``-pr1''.  The \verb|AUX_FILES| variable in your Makefile is
+recommendations, such version identifiers should have no appendices
+of the kind ``-pr1'').  The \verb|AUX_FILES| variable in your Makefile is
 a good start for what files to check.
 
 \item For documents that provide a \verb|test| target, run 
@@ -1409,6 +1411,7 @@ coordinator and performs the upload.
 document directory; this contains the raw HTML the uploading script got
 back from the document repository.  We do not automatically check for
 errors yet, so again human attention is required.
+
 \end{enumerate}
 
 
@@ -1480,7 +1483,7 @@ further information.
 then add your fork as a remote repository. Note here that we use a 
 read-only clone (https://) from the IVOA repository to avoid the potential
 for future mistakes. 
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\footnotesize]
 git clone  --recurse-submodules https://github.com/ivoa-std/standard.git
 cd standard
 git remote add mine git@github.com:username/standard.git
@@ -1488,7 +1491,7 @@ git remote -v
 \end{lstlisting}
 
 you should see output similar to 
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\footnotesize]
 mine  git@github.com:username/standard.git (fetch)
 mine  git@github.com:username/standard.git (push)
 origin  git://github.com/ivoa-std/standard.git (fetch)
@@ -1576,7 +1579,8 @@ addressed by the pull request would be particularly good choices.
 \end{enumerate}
 
 In order to ensure document histories remain readable, editors are
-encouraged to squash-merge pull requests.
+encouraged to squash-merge pull requests that only contain closely
+related commits.
 
 \subsection{Adopting a Repository for ivoa-std}
 
@@ -1593,7 +1597,8 @@ do that, they perform the following steps:
 files: README.md, LICENSE, Makefile, ivoatex submodule, and a LaTeX
 file with the proposed \verb|<short-name>|
 \item Create a new public repository \verb|ivoa-std/<short-name>| via github's
-browser UI and using the ``import'' facility to import the \verb|<original-repo>|
+browser UI and using the ``import'' facility to import the
+original repository
 \item Make a local clone and build the document; if this fails, create an issue
 for the original author(s) to fix before any work can proceed
 \item Optional: add github workflow, commit, and push directly to main branch
