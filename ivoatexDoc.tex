@@ -1534,6 +1534,32 @@ once you are ready.
 
 For future changes repeat steps 3 to 6.
 
+\subsection{Enabling Continuous Integration}
+
+\ivoatex{} can set up continuous integration workflows that
+automatically build documents on github infrastructure.  Editors can
+enable these workflows by running the following commands in the document
+directory:
+
+\begin{lstlisting}
+make github-preview
+git commit -m 'Add/Update gh-Workflows for PDF Preview'
+git push
+\end{lstlisting}
+
+This arranges for a document build to be run at every change to the main
+branch and when a pull request is created.  Since the github's workflow
+engine will spin up a container for that and install \ivoatex's
+prerequisites on that, this may take of order of minutes.  For a pull
+request, the built PDF is found under the ``Checks'' tab and then in
+``Artifacts''.
+
+After merges into the main branch, the built PDF becomes available under
+Releases $\to$ Auto PDF Preview.  You may want to have a link toward
+this PDF preview; in that case, simply include the Markdown snippet that
+the above make command prints into \verb|README.md|.
+
+
 \subsection{Managing Changes}
 \label{sect:chmgt}
 
