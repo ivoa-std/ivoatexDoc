@@ -7,7 +7,7 @@ DOCNAME = ivoatexDoc
 DOCVERSION = 1.3
 
 # Publication date, ISO format; update manually for "releases"
-DOCDATE = 2022-06-14
+DOCDATE = 2022-05-25
 
 # What is it you're writing: NOTE, WD, PR, or REC
 DOCTYPE = NOTE
