@@ -27,6 +27,8 @@ AUX_FILES=custom.css
 
 AUTHOR_EMAIL=msdemlei@ari.uni-heidelberg.de
 
+DOCREPO_BASEURL=http://ivoa.net/documents/Notes/IVOATexDoc
+
 -include ivoatex/Makefile
 
 ivoatex/Makefile:
