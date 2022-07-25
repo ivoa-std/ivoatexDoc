@@ -377,6 +377,14 @@ actual formatting.  This in particular concerns XML Schema files, for
 which the IVOA maintains a separate repository, but is by no means
 limited to them.
 
+\ivoatex{} evaluates another variable, \verb|DOCREPO_BASURL|, where you
+can set a non-standard location of the formatted document.  This 
+is only necessary for legacy documents, which is why the variable is not
+mentioned in the template makefile.  For example, this document sets:
+\begin{lstlisting}
+DOCREPO_BASEURL=http://ivoa.net/documents/Notes/IVOATexDoc
+\end{lstlisting}
+
 \paragraph{Additional metadata in the \LaTeX~source}
 
 The template for the \TeX\ source contains several lines with
