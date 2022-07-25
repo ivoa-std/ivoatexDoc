@@ -39,11 +39,11 @@
 
 \editor{Markus Demleitner}
 
-\previousversion[http://www.ivoa.net/documents/ivoatexDoc/20180814]{Version
+\previousversion[http://www.ivoa.net/documents/Notes/IVOATexDoc/20180814]{Version
 1.2}
-\previousversion[http://www.ivoa.net/documents/ivoatexDoc/20160430]{Version
+\previousversion[http://www.ivoa.net/documents/Notes/IVOATexDoc/20160430]{Version
 1.1}
-\previousversion[http://www.ivoa.net/documents/ivoatexDoc/20150129]{Version
+\previousversion[http://www.ivoa.net/documents/Notes/IVOATexDoc/20150129]{Version
 1.0}
        
 
@@ -375,7 +375,7 @@ sect.~\ref{sect:vectorgraphics}.
 upload to the IVOA document repository while not taking part in the
 actual formatting.  This in particular concerns XML Schema files, for
 which the IVOA maintains a separate repository, but is by no means
-limited to them.
+limited to them. 
 
 \ivoatex{} evaluates another variable, \verb|DOCREPO_BASURL|, where you
 can set a non-standard location of the formatted document.  This 
@@ -1356,7 +1356,11 @@ as defined in the Makefile):
 \begin{enumerate}
 \item Make sure your ivoatex is up to date; in git checkouts, run
 \verb|make update| (or, equivalently, 
-\verb|git submodule update --remote|).
+\verb|git submodule update --remote --rebase|).\footnote{\ivoatex{} before
+July 2022 had a bug that would detach ivoatex's HEAD, which would
+prevent \ivoatex{} updates from being pulled.  If unsure whether your
+document is still affected, enter the \texttt{ivoatex} directory and run
+\texttt{git checkout master} there.}
 
 \item If the document contains generated content, run 
 \verb|make generate| 
