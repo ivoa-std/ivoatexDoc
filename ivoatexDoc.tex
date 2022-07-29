@@ -1360,7 +1360,8 @@ as defined in the Makefile):
 July 2022 had a bug that would detach ivoatex's HEAD, which would
 prevent \ivoatex{} updates from being pulled.  If unsure whether your
 document is still affected, enter the \texttt{ivoatex} directory and run
-\texttt{git checkout master} there.}
+% no \verb because we're in a TeX argument.
+\texttt{git checkout master \&\& git pull} there.}
 
 \item If the document contains generated content, run 
 \verb|make generate| 
