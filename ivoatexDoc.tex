@@ -339,6 +339,7 @@ than ``main'').
 \label{sect:beginning}
 
 \paragraph{Main metadata in the Makefile}
+\label{sect:mainmeta}
 
 For convenience, the document production should start from some common
 templates which are part of the \ivoatex\ distribution.  The above
@@ -377,7 +378,7 @@ actual formatting.  This in particular concerns XML Schema files, for
 which the IVOA maintains a separate repository, but is by no means
 limited to them. 
 
-\ivoatex{} evaluates another variable, \verb|DOCREPO_BASURL|, where you
+\ivoatex{} evaluates another variable, \verb|DOCREPO_BASEURL|, where you
 can set a non-standard location of the formatted document.  This 
 is only necessary for legacy documents, which is why the variable is not
 mentioned in the template makefile.  For example, this document sets:
@@ -914,6 +915,13 @@ such (long) URLs is in footnotes, as they typcially cannot be hyphenated.
 In order to make \ivoatex~include the file linked to in this way in the
 package submitted to the document repository, you must add the argument
 of \texword{auxiliaryurl} to \verb|AUX_FILES| in the Makefile.
+
+The macro needs to know where the document will be installed.  By
+convention, this is \nolinkurl{https://www.ivoa.net/document/DOCNAME},
+but historically, that convention was not always followed.  To make
+ivoatex produce the correct URLs in those cases, use the
+\verb|DOCREPO_BASEURL| makefile variable discussed in
+sect.~\ref{sect:mainmeta}.
 
 \subsection{Editorial tools}
 
