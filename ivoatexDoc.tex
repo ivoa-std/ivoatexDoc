@@ -1004,50 +1004,9 @@ This is generated content
 if even just one command fails to execute as indicated by the
 command's return code; it is transactional in this sense.
 
-In addition to allowing arbitrary shell
-commands, \texttt{update\_generated.py} has a facility that allows
-calling special python functions from within documents: Commands
-starting with an exclamation mark (``!'') are translated to calls to
-appropriately named python functions defined within
-\texttt{update\_generated.py}.
-
-Currently, there are two such builtin commands; both are somewhat
-experimental features that may change when more experience has been
-gathered as to their usefulness.
-
-One command is \texttt{taptable}, which extracts documentation from a
-live \texttt{TAP\_SCHEMA}.  The access URL of the
-live TAP service must be specified in an environment variable TAPURL in
-the Makefile, for instance
-
-\begin{lstlisting}
-TAPURL=http://dc.g-vo.org/tap
-\end{lstlisting}
-
-Then, in the document one can use the structured comment
-
-\lstinputlisting{tapgen.tex}
-
-After a \texttt{make generate}, the LaTeX source for a table describing
-the columns of \texttt{tap\_schema.tables} will be between the two
-comment lines; re-running \texttt{make generate} will replace that
-content with a refreshed version.
-
-The second command implemented is \texttt{schemadoc}. This formats
-documentation for a type in an XML schema file.  This only works
-properly if the XML schema defines a \xmlel{vm:targetPrefix} element in
-the way pioneered by Ray Plante in
-VOResource.\footnote{See
-\url{https://github.com/ivoa-std/TAPRegExt} for a document using
-schemadoc.}
-With an appropriately instrumented schema, a document can say
-\lstinputlisting{schemadoc.tex}
-to produce documentation for the schema type \xmlel{MyType} within
-the XML schema file \texttt{SchemaSource.xsd}.
-
 \ivoatex~will never execute \texttt{update\_generated.py} as part of a
 dependency chain; it is intended that \texttt{make generate} must always
-been manually triggered.  On the one hand, this is because its
+be manually triggered.  On the one hand, this is because its
 dependencies cannot be generically modelled, given that arbitrary
 commands can be executed.  Document authors are also discouraged from
 providing such dependency information -- it is fairly common that
@@ -1061,6 +1020,99 @@ malicious software.  However, calling \texttt{make generate} is no
 additional security risk, as whoever can change the document can
 probably change the makefile, too, and the makefile can already contain
 arbitrary commands that will be executed on the calling user's behalf.
+
+
+\subsubsection{Built-in Generating Commands}
+
+In addition to admitting arbitrary shell
+commands, \texttt{update\_generated.py} has a facility that allows
+calling special python functions from within documents: Commands
+starting with an exclamation mark (``!'') are translated to calls to
+appropriately named python functions defined within
+\texttt{update\_generated.py}.
+
+In the following, we document the built-in generating commands
+(``builtins'') implemented in current ivoatex.
+
+\paragraph{taptable}
+
+The \texttt{taptable} builtin extracts documentation from a
+live \texttt{TAP\_SCHEMA}.  The access URL of the
+live TAP service must be specified in an environment variable TAPURL in
+the Makefile, for instance
+
+\begin{lstlisting}
+TAPURL=http://dc.g-vo.org/tap
+\end{lstlisting}
+
+Then, in the document one can use the structured comment
+
+\lstinputlisting[basicstyle=\ttfamily]{tapgen.tex}
+
+After a \texttt{make generate}, the LaTeX source for a table describing
+the columns of \texttt{tap\_schema.tables} will be between the two
+comment lines; re-running \texttt{make generate} will replace that
+content with a refreshed version.
+
+\paragraph{schemadoc}
+
+The \texttt{schemadoc} builtin formats
+documentation for a type in an XML schema file.  This only works
+properly if the XML schema defines a \xmlel{vm:targetPrefix} element in
+the way pioneered by Ray Plante in
+VOResource.\footnote{See
+\url{https://github.com/ivoa-std/TAPRegExt} for a document using
+schemadoc.}
+With an appropriately instrumented schema, a document can say
+\lstinputlisting{schemadoc-example.tex}
+to produce documentation for the schema type \xmlel{MyType} within
+the XML schema file \texttt{SchemaSource.xsd}.
+
+\paragraph{vocterms}
+
+The \texttt{vocterms} builtin formats the non-deprecated identifiers for
+an IVOA vocabulary \citep{2021ivoa.spec.0525D} into a comma-separated
+list.  It takes one argument, the vocabulary name (or, for legacy
+vocabularies that have path-like names, the relative path; in practice:
+whatever is behind \texttt{rdf/} in the vocabulary URI).  For instance,
+
+\lstinputlisting[basicstyle=\ttfamily]{vocterms-example.tex}
+
+will produce something like
+
+\begin{quotation}
+\noindent
+% GENERATED: !vocterms datalink/core
+\textsl{auxiliary},
+\textsl{bias},
+\textsl{calibration},
+\textsl{coderived},
+\textsl{counterpart},
+\textsl{cutout},
+\textsl{dark},
+\textsl{derivation},
+\textsl{detached-header},
+\textsl{documentation},
+\textsl{error},
+\textsl{flat},
+\textsl{noise},
+\textsl{package},
+\textsl{preview},
+\textsl{preview-image},
+\textsl{preview-plot},
+\textsl{proc},
+\textsl{progenitor},
+\textsl{this},
+\textsl{thumbnail},
+\textsl{weight}
+% /GENERATED
+\end{quotation}
+
+Note that vocabularies are designed to change over the lifetime of a
+standard release.  Hence, whenever a standard gives such a 
+list of identifiers, it should stress that that list is subject to
+change and that clients should always fetch the current vocabulary from
+the IVOA vocabulary repository.
 
 \subsection{The Standards Record}
 \label{sect:stdrec}
