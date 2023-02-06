@@ -43,7 +43,7 @@
 1.1}
 \previousversion[http://www.ivoa.net/documents/Notes/IVOATexDoc/20150129]{Version
 1.0}
-       
+
 
 \begin{document}
 
@@ -52,7 +52,7 @@ This note describes the \ivoatex\ document preparation system for IVOA
 standards and notes.  \ivoatex\ supports the production of
 PDF and HTML renderings of the documents with sources in
 plain text suitable for version control, as is desirable for normative
-texts.  This note contains a user guide as well as a discussion of 
+texts.  This note contains a user guide as well as a discussion of
 \ivoatex's dependencies and its implementation.  It describes the
 software as of May 2022 (release 1.2).
 \ivoatex{} has special facilities for the git version control system,
@@ -80,7 +80,7 @@ Creating and developing standards is a  big part of the operations of
 the International Virtual Observatory Alliance (IVOA).
 As these are normative texts, attention to detail is very important, and
 being able to rigorously track changes to the documents is highly
-advantageous.  
+advantageous.
 
 Standards are also often developed cooperatively, which means that
 capabilities for branching and merging are desirable.  This strongly
@@ -101,7 +101,7 @@ quality.
 With these constraints in mind, several possible solutions were
 investigated.  Paul
 Harrison's ivoadoc
-system\footnote{\url{https://volute.g-vo.org/svn/trunk/projects/ivoapub/ivoadoc}} 
+system\footnote{\url{https://volute.g-vo.org/svn/trunk/projects/ivoapub/ivoadoc}}
 went for XHTML as
 an input format and used XSLT2 and XML-FO as document processors.  While
 this facilitated several interesting features  -- for instance,
@@ -117,9 +117,9 @@ of XML-FO for PDF generation yielded inferior renderings with little
 prospect for improvements by third parties. Also, authors disliked
 writing HTML tags.
 
-Other options considered for source languages included docbook or 
+Other options considered for source languages included docbook or
 a lightweight markup language (ReStructuredText and markdown having
-been serious contenders).  
+been serious contenders).
 In each case, there were concerns either regarding the system's power
 and flexibility or its ease of installation and maintenance.
 
@@ -156,7 +156,7 @@ and desirable developments.
 
 \ivoatex\ is designed to work more or less out of the box on common
 POSIX-compliant systems; no non-free software is required for operation.
-Its main uncommon dependency is the tth translator, 
+Its main uncommon dependency is the tth translator,
 a program based on lex used to translate LaTeX
 to HTML.  As it is compact and portable, it is delivered with
 \ivoatex~and built on demand.
@@ -181,16 +181,16 @@ bibliographies or document-internal references.
 \item \texttt{python3} for  generated content and other housekeeping
 that is probably not relevant for most authors.  Editors need it for
 automatic submission to the document repository.
-\item Editors will need the XSLT1 processor 
+\item Editors will need the XSLT1 processor
 \texttt{xsltproc} (a different processor can
 be used, but that would probably require custom make rules) for HTML
 generation.
-\item Editors will need the 
+\item Editors will need the
 \texttt{gcc} compiler (another C compiler could be used; the
 central makefile should probably be amended to allow easier changes
 here), and \texttt{flex} for HTML generation.
 \item Editors will need the \texttt{zip} archiver for package generation.
-\item Editors will need \texttt{imageMagick} and \texttt{ghostscript} if 
+\item Editors will need \texttt{imageMagick} and \texttt{ghostscript} if
 vector graphics is to be processed into HTML.
 \end{itemize}
 
@@ -243,7 +243,7 @@ make ivoatexDoc.html  # make an html document
 make package # make a zipfile for IVOA submission
 \end{lstlisting}
 
-During HTML generation, various diagnostics both 
+During HTML generation, various diagnostics both
 from tth and from xsltproc (unknown commands,
 unexpected end tags, and the like) are
 expected at this point and no reason for alarm; we work on reducing the
@@ -272,7 +272,7 @@ assume that, too).  A name
 like \texttt{SimpleDALRegExt} probably marks the upper limit in terms of
 length.
 
-While it is clearly preferable if authors use the IVOA's 
+While it is clearly preferable if authors use the IVOA's
 designated common version control system\footnote{Which, despite
 many concerns \citep{book:zuboff}, currently is
 github.com.} from the outset of
@@ -299,7 +299,7 @@ control has been enabled.  These are safe to ignore.
 The recommended way to run \ivoatex{}
 is to use git's submodule feature.  This makes it very simple to keep
 ivoatex up to date without polluting the
-document's history, and it makes it straightforward to 
+document's history, and it makes it straightforward to
 feed back any improvements you may make to ivoatex.  Hence, you will
 usually start a document like this:
 
@@ -318,7 +318,7 @@ manually, too; see the script for what files to move where.
 At this point, create a repository in your account using github.com's web
 interface. Use \$DOCNAME as the repository name, and do not choose any
 template; this procedure will leave you at a web page with a URI like
-\nolinkurl{https://github.com/msdemlei/ivoatexDoc}.  
+\nolinkurl{https://github.com/msdemlei/ivoatexDoc}.
 On that page, you can obtain a
 ``Clone URI'', which is what you can push to.  Use the ssh variant,
 i.e., something like \verb|git@github.com:username/docname.git|.
@@ -329,7 +329,7 @@ branch:
 git remote add origin <Clone URI>
 git push --set-upstream origin main
 \end{lstlisting}
-(depending on your git version and configuration, 
+(depending on your git version and configuration,
 you may have to use ``master'' rather
 than ``main'').
 
@@ -346,7 +346,7 @@ what the document is about), \verb|$DOCNAME.tex| (the future document)
 and \verb|Makefile| (where some of the document metadata is defined).
 
 
-The next step is to fill out the makefile template.  
+The next step is to fill out the makefile template.
 As of the formatting of this document, this template looks like this:
 
 \lstinputlisting[language=make,basicstyle=\footnotesize]{ivoatex/Makefile.template}
@@ -374,10 +374,10 @@ sect.~\ref{sect:vectorgraphics}.
 upload to the IVOA document repository while not taking part in the
 actual formatting.  This in particular concerns XML Schema files, for
 which the IVOA maintains a separate repository, but is by no means
-limited to them. 
+limited to them.
 
 \ivoatex{} evaluates another variable, \verb|DOCREPO_BASEURL|, where you
-can set a non-standard location of the formatted document.  This 
+can set a non-standard location of the formatted document.  This
 is only necessary for legacy documents, which is why the variable is not
 mentioned in the template makefile.  For example, this document sets:
 \begin{lstlisting}
@@ -442,16 +442,16 @@ usually be necessary.
 \paragraph{The Architecture Diagram}
 \label{sect:archdiag}
 
-An architecture diagram is only 
+An architecture diagram is only
 necessary for documents on the recommendation track.  Notes may have
 one, but since Notes are not shown on it, that is rather
-unusual.  
+unusual.
 
 To prepare an architecture diagram, first obtain the full description of
 all IVOA standards:
 
 \begin{lstlisting}
-cp ivoatex/archdiag-full.xml role_diagram.xml 
+cp ivoatex/archdiag-full.xml role_diagram.xml
 git add role_diagram.xml
 \end{lstlisting}
 
@@ -482,7 +482,7 @@ The standard-specific
 architecture diagram will be built by saying \texttt{make
 role\_diagram.svg} and can be viewed using, for instance, common web
 browsers.  Please refrain from editing the SVG with vector graphics
-programs.  In the PDF renderings of the document, 
+programs.  In the PDF renderings of the document,
 a PDF version of the architecture diagram is
 required.  This is built using \texttt{make role\_diagram.pdf}, and a
 stand-in will be built if your system lacks the software to do this
@@ -520,11 +520,11 @@ main source had been edited.  This target is probably not useful on
 machines with latexmk.
 \item \texttt{\$DOCNAME.html} generates an HTML rendering of the
 document; at this point, this will typically emit quite a bit of
-spurious diagnostics.  Unfortunately, real problems may hide within.  
+spurious diagnostics.  Unfortunately, real problems may hide within.
 Therefore, we currently recommend a visual inspection of the resulting
 HTML before submission.
 \item \texttt{package} generates a zip file containing everything needed
-for publication in the IVOA's document repository.   Obviously, 
+for publication in the IVOA's document repository.   Obviously,
 \texttt{DOCVERSION}, \texttt{DOCTYPE}, and \texttt{DOCDATE} in the
 Makefile should be updated as necessary before this target is built.
 The result is a zip file with a name compliant to the IVOA document
@@ -549,7 +549,7 @@ if \verb|pdftk| is installed.
 \end{itemize}
 
 \begin{admonition}{Note}
-Simply running \texttt{latex}, \texttt{pdflatex}, 
+Simply running \texttt{latex}, \texttt{pdflatex},
 or \texttt{mklatex} directly
 (rather than through make) is \emph{not} supported with \ivoatex.  Due
 to the non-global installation of the support files, the \TeX\ run needs
@@ -586,17 +586,17 @@ in sect.~\ref{sect:beginning}.
 \item[\texword{ucd}] a macro for marking up UCDs.  This in particular
 helps with hyphenation of these, typically long, strings.
 \item[\texword{xmlel}] a macro for marking up XML element or attribute
-names and similar.  
+names and similar.
 \item[\texword{vorent}] for a name taken from VOResource or its
 extensions, usually an
 element or attribute name.
-\item[\texword{admonition}] This is an environment for 
-displayed boxes, intended for notes, tips, and the like.  
+\item[\texword{admonition}] This is an environment for
+displayed boxes, intended for notes, tips, and the like.
 It takes an argument giving the head of the box, e.g.,
 
 \begin{lstlisting}
 \begin{admonition}{Note}
-Admonitions should not be overdone.  
+Admonitions should not be overdone.
 Also, they are floating insertions.
 \end{admonition}
 \end{lstlisting}
@@ -648,7 +648,7 @@ languages supported that are likely relevant in a VO context include C,
 fortran, python, SQL, and java, specified as above case-insensitively.
 
 The setup in the example (flexible columns, tags in
-typewriter, no explicit blanks even in strings) 
+typewriter, no explicit blanks even in strings)
 produces reasonably pleasant output for a wide range of languages.
 
 Actual listings are obtained with code like
@@ -701,7 +701,7 @@ listed in ADS, i.e., recommendations, endorsed notes, and a selection of
 other notes.
 \end{itemize}
 
-Without latexmk, changes to the document that 
+Without latexmk, changes to the document that
 introduce new references or changes to the
 bibliography require that \texttt{make biblio} is run before changes
 become visible.
@@ -731,7 +731,7 @@ instance,
 \begin{lstlisting}
 IVOA Identifiers \citep{2016ivoa.spec.0523D} introduces URIs to
 reference Registry records, which are typically transmitted in
-VOResource \citep{2018ivoa.spec.0625P} format.  Both VOResource 
+VOResource \citep{2018ivoa.spec.0625P} format.  Both VOResource
 and IVOA Identifiers are based on various W3C standards.
 \end{lstlisting}
 
@@ -781,7 +781,7 @@ in-progress document is
 
 \begin{lstlisting}
 @Misc{wd:Datalink,
-  author={Patrick Dowler and Francois Bonnarel and 
+  author={Patrick Dowler and Francois Bonnarel and
     Laurent Michel and Tom Donaldson and David Languignon},
   editor={Patrick Dowler},
   howpublished={{IVOA Working Draft 22 October 2013}},
@@ -827,7 +827,7 @@ files can be directly used in \texword{includegraphics}.  The names of
 such figures must be listed in the makefile's \texttt{VECTORFIGURES}
 variable.
 
-From \texttt{VECTORFIGURES}, \ivoatex\ arranges that, when a PDF figure 
+From \texttt{VECTORFIGURES}, \ivoatex\ arranges that, when a PDF figure
 \texttt{foo.pdf} is used, the HTML target depends on a file called
 \texttt{foo.png}.  This PNG can be generated automatically by
 \ivoatex\ using a combination of ghostscript and ImageMagick.  It may
@@ -878,8 +878,8 @@ generally be avoided as it fails on paper.  For instance,
 \end{lstlisting}
 would severely degrade when printed and is hence discouraged, whereas
 \begin{lstlisting}
-The IVOA\footnote{\url{http://ivoa.net}} has issued many 
-standards, all of which can be retrieved from 
+The IVOA\footnote{\url{http://ivoa.net}} has issued many
+standards, all of which can be retrieved from
 \url{http://ivoa.net/documents}.
 \end{lstlisting}
 works properly on all of \ivoatex's target media.
@@ -887,7 +887,7 @@ works properly on all of \ivoatex's target media.
 With non-HTTP URIs, it is recommended to use hyperref's
 \texword{nolinkurl} macro (rather than an unadorned \texword{texttt} or
 similar); advantages include that line breaking is better with
-nolinkurl, less manual escaping is necessary, and, if desired, 
+nolinkurl, less manual escaping is necessary, and, if desired,
 such URIs can be more easily styled.  An example:
 
 \begin{lstlisting}
@@ -904,7 +904,7 @@ XML schema files should not be distributed in this way, as they have
 conventional places within the ivoa.net URL hierarchy.
 
 For instance, \verb|\auxiliaryurl{custom.css}| expands to
-$$\hbox{\auxiliaryurl{custom.css},}$$ in this document, 
+$$\hbox{\auxiliaryurl{custom.css},}$$ in this document,
 which is, for each release of this
 document, the URL the example custom CSS file mentioned in the example
 in sect.~\ref{sect:customcss} is found at.  The preferred way to include
@@ -937,7 +937,7 @@ It would be used like this:
 \todo{This is an example for a editorial note}.
 \end{lstlisting}
 
-A rendering of such a to-do note is shown in this 
+A rendering of such a to-do note is shown in this
 paragraph\todo{This is an example for a editorial note}. In HTML output,
 only the simple \texword{todo} macro without options is supported, and
 text is simply displayed inline right now.  Note in particular that
@@ -954,7 +954,7 @@ manageable solution to the problem such packages attempt to solve.
 \label{sect:vcs}
 
 It is recommended to include basic metadata obtained from the version
-control system into \ivoatex~Documents where available.  
+control system into \ivoatex~Documents where available.
 To enable in-document VCS metadata in git, two steps are necessary:
 
 \begin{enumerate}
@@ -973,7 +973,7 @@ at which to look for a source repository might be found are welcome.
 
 Sometimes it is desirable to have parts of a document generated through
 some sort of ivoatex-external process.  Examples include copying
-documentation from XML Schema files into the standard document 
+documentation from XML Schema files into the standard document
 or obtaining column metadata for standard
 data models from a live TAP\_SCHEMA.
 
@@ -1107,7 +1107,7 @@ will produce something like
 \end{quotation}
 
 Note that vocabularies are designed to change over the lifetime of a
-standard release.  Hence, whenever a standard gives such a 
+standard release.  Hence, whenever a standard gives such a
 list of identifiers, it should stress that that list is subject to
 change and that clients should always fetch the current vocabulary from
 the IVOA vocabulary repository.
@@ -1141,7 +1141,7 @@ In the resulting file, the items one has to change are marked with four
 hash marks; the elements \xmlel{schema} and \xmlel{key} can be removed
 or repeated as required by a particular standard, all other elements
 present should be given at least once.  Please remove the explanatory
-comments as you go. 
+comments as you go.
 
 This document comes with a filled-out sample for
 itself\footnote{\auxiliaryurl{ivoatexDoc.vor}}.  This is
@@ -1248,13 +1248,13 @@ Where documents contain sample queries or requests, it is good practice
 to automatically extract and execute these, ideally with some basic
 checks for sane results.  An example for how this can be organised can
 be found with the RegTAP
-standard\footnote{\url{https://github.com/ivoa-std/RegTAP}}.  
+standard\footnote{\url{https://github.com/ivoa-std/RegTAP}}.
 
 To control the number of different tools editors might require, it
 is recommended to base such code on either STILTS or pyVO
 \citep{2014ascl.soft02004G}.
 
-In RegTAP, which uses pyVO, the test rule looks like this 
+In RegTAP, which uses pyVO, the test rule looks like this
 (edited here for clarity):
 
 \begin{lstlisting}[basicstyle=\footnotesize]
@@ -1305,13 +1305,13 @@ to yield pairs of section titles and sample queries.  The code in RegTAP
 uses heuristics strictly valid only for this document (e.g., queries in
 lstlisting environments, subsections as the relevant sectioning
 element).  The basic idea -- have some magic comment to signal that an
-example is executable -- should be widely applicable, though.  
+example is executable -- should be widely applicable, though.
 This way, a verifiable query in the instance document looks like
 this:
 \begin{lstlisting}[language=tex,basicstyle=\footnotesize]
 %CHECK_HERE
 \begin{lstlisting}[language=SQL,flexiblecolumns=true]
-SELECT ivoid 
+SELECT ivoid
 FROM rr.resource
 ...
 \end{lstlisting}
@@ -1413,7 +1413,7 @@ as defined in the Makefile):
 
 \begin{enumerate}
 \item Make sure your ivoatex is up to date; in git checkouts, run
-\verb|make update| (or, equivalently, 
+\verb|make update| (or, equivalently,
 \verb|git submodule update --remote --rebase|).\footnote{\ivoatex{} before
 July 2022 had a bug that would detach ivoatex's HEAD, which would
 prevent \ivoatex{} updates from being pulled.  If unsure whether your
@@ -1421,10 +1421,13 @@ document is still affected, enter the \texttt{ivoatex} directory and run
 % no \verb because we're in a TeX argument.
 \texttt{git checkout master \&\& git pull} there.}
 
-\item If the document contains generated content, run 
-\verb|make generate| 
-and inspect the subsequent output of 
-\verb|git diff| 
+\item Create a ``release branch'':
+\verb|git checkout -b to-<doctype>-<version>|
+
+\item If the document contains generated content, run
+\verb|make generate|
+and inspect the subsequent output of
+\verb|git diff|
 for anything unexpected.
 
 \item Add the version-specific URL and designation (e.g.,
@@ -1443,8 +1446,8 @@ recommendations, such version identifiers should have no appendices
 of the kind ``-pr1'').  The \verb|AUX_FILES| variable in your Makefile is
 a good start for what files to check.
 
-\item For documents that provide a \verb|test| target, run 
-\verb|make test|; 
+\item For documents that provide a \verb|test| target, run
+\verb|make test|;
 this target must at least not error out and ideally not produce
 any diagnostics.
 
@@ -1460,7 +1463,7 @@ that for you in the case of IVOA recommenations.
 
 \item Run \verb|make ${DOCNAME}.html| and briefly review the produced
 HTML file.  Warnings or even error messages in this process are
-(regrettably) still to be expected, so at least superficial human inspection 
+(regrettably) still to be expected, so at least superficial human inspection
 of the output is necessary.
 
 \item Edit the Makefile and update the DOCVERSION, DOCDATE, and DOCTYPE
@@ -1485,6 +1488,9 @@ document directory; this contains the raw HTML the uploading script got
 back from the document repository.  We do not automatically check for
 errors yet, so again human attention is required.
 
+\item Push your release branch and merge it into the document's main
+branch.
+
 \end{enumerate}
 
 
@@ -1504,7 +1510,7 @@ github.
 As described above, documents will usually start in private
 repositories.  At the latest when documents become become Proposed
 Endorsed Notes or Working Drafts, they must move into the ivoa-std
-organisation on github.  
+organisation on github.
 Documents there are subject to certain policies ensuring
 a controlled and well-documented evolution (cf.~sect.~\ref{sect:chmgt}).
 
@@ -1520,25 +1526,25 @@ and in particular Notes.  However, there is no requirement to do that.
 \subsection{Contributing to a Document}
 \label{sect:contributing}
 
-IVOA repositories for standards and notes on github follow many 
-open source projects on that platform in using a fork 
-and pull request workflow for contributing 
+IVOA repositories for standards and notes on github follow many
+open source projects on that platform in using a fork
+and pull request workflow for contributing
 updates. This allows open contributions whilst protecting the repository
-integrity. All contributors, whether document editors or first time 
-contributors, follow this same process. All pull requests need to be 
+integrity. All contributors, whether document editors or first time
+contributors, follow this same process. All pull requests need to be
 approved by a maintainer of the repository.
 
 When setting up your environment for a first time commit, we recommend
 following the `triangle' workflow (Fig.~\ref{fig:triangleWorkflow}) to
-make later contributions easier. 
+make later contributions easier.
 
 \begin{figure}[th]
   \begin{center}
-    \includegraphics[width=0.9\textwidth]{triangle_workflow.png} 
+    \includegraphics[width=0.9\textwidth]{triangle_workflow.png}
   \end{center}
   \caption{The `triangle' workflow, where updates are made to a local
-      copy of the official repository, pushed to a fork of the 
-      repository and contributed back to the official repository 
+      copy of the official repository, pushed to a fork of the
+      repository and contributed back to the official repository
       through pull requests.}
   \label{fig:triangleWorkflow}
 \end{figure}
@@ -1546,16 +1552,16 @@ make later contributions easier.
 \begin{enumerate}
 
 \item Fork the official repository using the `Fork' button on the upper
-right of the repository's GitHub web page. This will create a copy of 
+right of the repository's GitHub web page. This will create a copy of
 the repository under your user name which you can directly edit. See the
-GitHub documentation 
-\url{https://docs.github.com/en/get-started/quickstart/fork-a-repo} for 
+GitHub documentation
+\url{https://docs.github.com/en/get-started/quickstart/fork-a-repo} for
 further information.
 
-\item On your local computer, clone the official repository and 
-then add your fork as a remote repository. Note here that we use a 
+\item On your local computer, clone the official repository and
+then add your fork as a remote repository. Note here that we use a
 read-only clone (https://) from the IVOA repository to avoid the potential
-for future mistakes. 
+for future mistakes.
 \begin{lstlisting}[basicstyle=\footnotesize]
 git clone  --recurse-submodules https://github.com/ivoa-std/standard.git
 cd standard
@@ -1563,7 +1569,7 @@ git remote add mine git@github.com:username/standard.git
 git remote -v
 \end{lstlisting}
 
-you should see output similar to 
+you should see output similar to
 \begin{lstlisting}[basicstyle=\footnotesize]
 mine  git@github.com:username/standard.git (fetch)
 mine  git@github.com:username/standard.git (push)
@@ -1585,8 +1591,8 @@ branch to using ``main''.  Depending on the repository, you may need to
 adapt the above commandline accordingly.
 
 \item Once you are happy with the change (and we do recommend building
-the PDF document locally to review it) you can save it to git and send 
-it to your forked repository.  The status command will list everything 
+the PDF document locally to review it) you can save it to git and send
+it to your forked repository.  The status command will list everything
 that has changed and the add command will include it the commit.
 
 \begin{lstlisting}
@@ -1710,7 +1716,7 @@ now be forked from ivoa-std in order to enable future pull requests
 (cf.~sect.~\ref{sect:contributing})
 \end{enumerate}
 
-Branch protection rules are set up in the ``Settings'' tab of the repository (top right). 
+Branch protection rules are set up in the ``Settings'' tab of the repository (top right).
 On the left side of the settings page, choose ``Branches'' and either edit the \verb|main|
 branch rules (if present) or add a new rule (if not). The standard set of rules that are
 suitable for most development are:
@@ -1724,18 +1730,18 @@ suitable for most development are:
 \end{enumerate}
 
 The status checks requirement can be enabled before an actual check (github workflow) is
-added or found by the system. Repository administrators may have to come back and enable a 
+added or found by the system. Repository administrators may have to come back and enable a
 specific status check workflow after it is added (behaviour is a little opaque here).
 
-By not enabling ``Include administrators'', repository admins will be able to override the 
+By not enabling ``Include administrators'', repository admins will be able to override the
 approval requirement and merge pull requests that do not require review (e.g., fixing the build,
 updating Makefile settings, etc).
 
-Granting admin privileges to the WG (there is a team setup for each WG) is also done in the 
+Granting admin privileges to the WG (there is a team setup for each WG) is also done in the
 ``Settings'' tab. On the left side of the settings page, chose ``Collaborators and teams''
 and then ``Add teams'' (green button on the right). Start typing the WG name or acronym (e.g.
 dal or reg) and then select the complete group name from the popup. The WG teams are all
-of the form \verb|ivoa-std/<group>-admin|; the complete list can be found from the top-level 
+of the form \verb|ivoa-std/<group>-admin|; the complete list can be found from the top-level
 \verb|ivoa-std| organization page in the ``Teams'' tab.
 
 \section{Customisation and Development}
@@ -1780,7 +1786,7 @@ from its source.
 In order to make it support rich, semantic markup, \ivoatex\ needs to be
 continuously developed.  In particular, it is good practice to define
 macros for marking up values of certain datatypes, as with \ivoatex's
-\texword{xmlel} and \texword{vorent}.  
+\texword{xmlel} and \texword{vorent}.
 Thus, whenever a document has multiple
 instances of such values, authors should define macros and use these.
 For instance, RegTAP deals with lots of concepts from its own
@@ -1804,7 +1810,7 @@ documents.
 
 The tth translator used by \ivoatex\ ignores \texword{usepackage}.  Many
 common packages are natively supported, but those that are not in
-general need specific handling, and sometimes support is somewhat spotty.  
+general need specific handling, and sometimes support is somewhat spotty.
 For instance, the \texword{nolinkurl}
 macro is not supported natively by tth, and hence in
 \texttt{tthdefs.tex} there is code to the effect of
@@ -1814,7 +1820,7 @@ macro is not supported natively by tth, and hence in
   \special{html:</span>}}
 \end{lstlisting}
 
-When a document requires special markup, it is likely that 
+When a document requires special markup, it is likely that
 different implementations will be necessary for PDF and HTML output.
 Using \texword{iftth} the implementations for the current output mode
 can be selected (without the \texword{newif} mentioned in the tth
@@ -1842,8 +1848,8 @@ it is part of \ivoatex~proper now).
 \label{sect:customcss}
 
 If you find you need custom CSS to fix HTML formatting, you should
-probably talk to \ivoatex's authors first.  There are, however, 
-legitimate cases when something needs extra styling in HTML that 
+probably talk to \ivoatex's authors first.  There are, however,
+legitimate cases when something needs extra styling in HTML that
 comes out right without further effort
 in the PDF output.  In such cases, a custom CSS file can
 be added to a repository (it must then also be added to \texttt{SOURCES}
@@ -1870,7 +1876,7 @@ file\footnote{\auxiliaryurl{custom.css}},
 \comicstuff{If this is comic sans, your web browser is permissive.}
 \end{lstlisting}
 
-\noindent becomes: 
+\noindent becomes:
 \comicstuff{If this is comic sans, your web browser is permissive.}
 
 \subsection{Maintenance of the Architecture Diagram}
@@ -1891,7 +1897,7 @@ convenient, unitless floating point numbers, and the conversion of these
 coordinates to physical ones is done at render time.
 
 In the diagram, the standards shoud be limited to the inner box, i.e.,
-the zone between 50, 100 and 750, 500.  Standards boxes are 
+the zone between 50, 100 and 750, 500.  Standards boxes are
 18 pixels high, which is set in the \texttt{format-standard} template
 in \texttt{make-archdiag.xslt}.  Their widths default to 90 pixels, but
 when you add a box in \verb|archdiag-full.xml|, please take a moment to
