@@ -1,4 +1,28 @@
 #!/usr/bin/python3
+"""
+A regression test for ivoatexDoc.
+
+The idea is to exercise the various section's claims in something like
+a function per section (where we probably shouldn't reference the sections
+by the (unstable) numbers; hm).  All this can hopefully be done
+in a single document that's being kept in a temporary directory
+that is created in run_tests, which also does the scaffolding.
+
+The test functions should raise AssertionErrors when something is wrong.
+The assumption is that the first error terminates the entire run.  Still,
+by only editing based on what test_first_run produces, you can comment
+out intermediate tests during development.
+
+The most convenient mode for development is probably to call run_shell()
+at the right time.
+
+Do edits using the edit_file function; it will fail if an edit does
+not change anything, which adds some robustness to what naturally is
+a bit shaky.
+
+Distributed under CC0 by the IVOA.
+"""
+
 
 import os
 import subprocess
@@ -19,12 +43,35 @@ def execute(cmd, check_output=None):
 	output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
 	output = output.decode("utf-8")
 	if isinstance(check_output, str):
+		with open("last-output.txt", "w", encoding="utf-8") as f:
+			f.write(output)
 		assert check_output in output, f"'{check_output}' missing"
-		print(output)
+	return output
+
+
+def assert_in_file(file_name, particles):
+	"""raises an assertion error if any of the strings/bytes in particles is
+	not present in the file file_name.
+
+	if particles[0] is a string, content will be utf-8 decoded, else
+	we will make assertions about byte strings.
+	"""
+	with open(file_name, "rb") as f:
+		content = f.read()
+	if particles and isinstance(particles[0], str):
+		content = content.decode("utf-8")
+	
+	for part in particles:
+		assert part in content, f"'{part}' not in {file_name}"
+
+
+def run_shell():
+	print("\n*** Here is a shell in the document directory:")
+	subprocess.call([os.environ.get("SHELL", "sh")])
 
 
 def do_edit(doc, to_replace, replacement):
-	"""replaces to_replace with replacement in doc, making sure something 
+	"""replaces to_replace with replacement in doc, making sure something
 	actually changed.
 	"""
 	changed = doc.replace(to_replace, replacement)
@@ -47,13 +94,6 @@ def edit_file(target_file, replacements):
 		f.write(doc)
 
 
-def get_pdf_text(pdf_name):
-	"""returns some sort of textual representation of the contents of pdf_name.
-	"""
-	return subprocess.check_output(["pdftotext", pdf_name, "-"]
-		).decode("utf-8")
-
-
 def edit_Makefile_template():
 	#	Sect. 2.2.3, paragraph "Main metadata"
 	edit_file("Makefile", [
@@ -65,9 +105,10 @@ def edit_Makefile_template():
 def edit_document_template():
 	#	Sect. 2.2.3, paragraph "Additional metadata"
 	edit_file("Regress.tex", [
+			(r"\input tthdefs", "\\batchmode\n\\input tthdefs"),
 			("???? Full title ????", "Regression test"),
 			("???? group ????", "Standards and Processes"),
-			("????URL????", "http://ivoa.net/authors/Fred/Test"),
+			("\\author[????URL????", "\\author[http://ivoa.net/authors/Fred/Test"),
 			("????Alfred Usher Thor????", "Test, F."),
 			("????Fred Offline????", "Other-Person, A. N."),
 			("???? Abstract ????", "This is a document for a regression test.\n"
@@ -85,19 +126,152 @@ def edit_document_template():
 		])
 
 
-def test_basic_run():
+def test_first_run():
 	# Basically, make sure that a very basic LaTeX call works and yields a
 	# plausible PDF.
-	execute("make", "Output written on Regress.pdf (3 pages")
+	execute("make", "Latexmk: All targets (Regress.pdf) are up-to-date")
+	execute("pdftotext Regress.pdf")
 
-	built_text = get_pdf_text("Regress.pdf")
-	assert "\nTest, F., Other-Person, A. N.\n" in built_text,\
-		"Author processing broken"
-	assert "This is an IVOA Note expressing" in built_text, "Status note?"
-	assert "2 Normative Nonsense\n\n3" in built_text, "Missing ToC?"
-	assert "‘Key words for use in RFCs to" in built_text,\
-		"Bibliography missing?"
+	assert_in_file("Regress.txt", [
+		"Working Group\nStandards and Processes",
+		"This version\nhttps://www.ivoa.net/documents/Regress/20230201",
+		"\nTest, F., Other-Person, A. N.\n",
+		"This is an IVOA Note expressing",
+		"2 Normative Nonsense\n\n3",
+		"‘Key words for use in RFCs to"])
 
+
+def test_template_files():
+	assert_in_file("README.md", [
+		"This document describes/defines FILL-THIS-OUT",
+		"see [ivoatexDoc](https://ivoa.net/documents/Notes/IVOATex/)"])
+	
+	assert_in_file("LICENSE", [
+		"Attribution-ShareAlike 4.0 International"])
+
+
+def test_archdiag():
+	execute("cp ivoatex/archdiag-full.xml role_diagram.xml")
+	execute("git add role_diagram.xml")
+	edit_file("Makefile", [
+		("SOURCES = $(DOCNAME).tex", "SOURCES = $(DOCNAME).tex role_diagram.pdf"),
+		("FIGURES = ", "FIGURES = role_diagram.svg"),])
+	edit_file("role_diagram.xml", [
+		('<rec name="HiPS" x="430" y="430" w="33"/>',
+			'<thisrec name="Regression" x="430" y="430" w="80"/>')])
+	edit_file("Regress.tex", [
+			("(no figure yet)",
+				r"\includegraphics[width=0.9\textwidth]{role_diagram.pdf}")])
+
+	execute("make")
+
+	assert_in_file("role_diagram.pdf", [b"%PDF-1.5", b"/Kids [ 2 0 R ]"])
+	assert_in_file("Regress.log",
+		["<role_diagram.pdf, id=47, 803.0pt x 602.25pt>"])
+
+
+def test_extra_macros():
+	edit_file("Regress.tex", [
+		(r"\previousversion{This is the first public release}",
+			"\previousversion[http://ivoa.net/documents/alt]{Regress WD 0.1}"),
+		(r"\appendix",
+			"Do not use \\ucd{meta.ref.ivorn} in \\xmlel{FIELD}"
+			" or \\vorent{capability}.\n\n"
+			"\\begin{inlinetable}\n\\begin{tabular}{ll}\n\\sptablerule\n"
+			"a&b \\\\\n\\sptablerule\n"
+			"\\end{tabular}\\end{inlinetable}\n"
+			"\\appendix"),
+		("?This is the start of nothing",
+			"In a Regression test, we sometimes want to break things.\n\n"
+			"\\begin{admonition}{Note}\nBut still be reasonable.\\end{admonition}"),
+		])
+	
+	execute("make Regress.html")
+
+	assert_in_file("Regress.html", [
+		"<i>meta.ref.ivorn</i>",
+		'<span class="xmlel">FIELD</span>',
+		'<span class="vorent">capability</span>',
+		'<div class="admonition">',
+		'<p class="admonition-type">Note</p>',
+		'But still be reasonable.',
+		'<table class="tabular">',
+		'<tr><td align="left">a</td>'])
+
+
+def test_verbatims():
+	edit_file("Regress.tex", [
+		(r"\input tthdefs",
+			"\\input tthdefs\n\\lstset{flexiblecolumns=true,showstringspaces=False}"),
+		(r"\section{Normative Nonsense}", "\\section{Normative Nonsense}\n"
+			"\\begin{lstlisting}[language=XML]\n"
+			'foo_1 = "\\galt\'s?"\n'
+			'<ja-klar/>\n'
+			'\\end{lstlisting}\n')])
+
+	execute("make")
+	execute("pdftotext Regress.pdf")
+
+	assert_in_file("Regress.txt", [
+		'foo_1 = "\\galt\'s?"\n'
+		'<ja-klar/>'])
+
+
+def test_referencing():
+	edit_file("Regress.tex", [
+		(r"\section{Normative Nonsense}", "\\section{Normative Nonsense}\n"
+			"We are not talking about \\citep{2010ivoa.spec.1202P}\n")])
+
+	execute("make")
+	execute("pdftotext Regress.pdf")
+
+	assert_in_file("Regress.txt", [
+		'We are not talking about (Plante and Stébé et al., 2010)',
+		"Bradner, S. (1997), ‘Key words",
+		"Collections, Services Version 1.1’",
+		"http://doi.org/10.5479/ADS/bib/2010ivoa.spec.1202P"])
+
+	execute("make bib-suggestions",
+		"2010ivoa.spec.1202P -> 2021ivoa.spec.1102D ?")
+
+
+def test_auxiliaryurl_and_test():
+	edit_file("Regress.tex", [
+		(r"\section{Normative Nonsense}", "\\section{Normative Nonsense}\n"
+			"See \\auxiliaryurl{our-instance.xml} for details.")])
+	edit_file("Makefile", [
+		('AUX_FILES =', 'AUX_FILES = our-schema.xml')])
+	with open("our-instance.xml", "w") as f:
+		f.write(
+"""<ri:Resource xmlns:ri="http://www.ivoa.net/xml/RegistryInterface/v1.0" xmlns:vg="http://www.ivoa.net/xml/VORegistry/v1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" created="2014-09-24T08:36:00Z" status="active" updated="2020-09-17T10:19:29Z" xsi:type="vg:Authority">
+  <title>GAVO Education and Outreach WG</title>
+  <identifier>ivo://edu.gavo.org</identifier>
+  <curation>
+  	<publisher>GAVO</publisher>
+  	<contact><name>Winnie</name></contact>
+  </curation>
+  <content>
+    <subject>virtual-observatories</subject>
+    <description>authority</description>
+    <referenceURL>http://www.g-vo.org/</referenceURL>
+  </content>
+  <managingOrg>ivo://org.gavo.dc/org</managingOrg>
+</ri:Resource>""")
+
+	execute("make Regress.html")
+
+	assert_in_file("Regress.html", [
+		'See   <a href="https://www.ivoa.net/documents/Regress/20230201/'
+		'our-instance.xml">https://www.ivoa.net/documents/Regress/'
+		'20230201/our-instance.xml</a> for'])
+
+	edit_file("Makefile", [
+		("test:", "STILTS ?= stilts\ntest:"),
+		('@echo "No tests defined yet"',
+			'@$(STILTS) xsdvalidate schemaloc="http://www.ivoa.net/xml/VORegistry/v1.0=http://www.ivoa.net/xml/VORegistry/v1.0" doc=our-instance.xml')])
+
+	assert execute("make test")==""
+			
 
 def run_tests():
 		# Sect 2.2, opening
@@ -114,7 +288,21 @@ def run_tests():
 		edit_Makefile_template()
 		edit_document_template()
 
-		test_basic_run()
+		test_first_run()
+		test_template_files()
+
+		if True:
+			test_archdiag()
+
+			test_extra_macros()
+
+			test_verbatims()
+
+			test_referencing()
+
+		test_auxiliaryurl_and_test()
+		run_shell()
+
 
 def main():
 	with tempfile.TemporaryDirectory("ivoatex") as dir:
@@ -126,8 +314,8 @@ def main():
 			traceback.print_exc()
 			print(f"**Failure. Dumping you in a shell in the testbed.")
 			print("Exit the shell to tear it down.")
-			subprocess.call([os.environ.get("SHELL", "sh")])
-
+			run_shell()
 
 if __name__=="__main__":
 	main()
+
