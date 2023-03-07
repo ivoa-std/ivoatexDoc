@@ -24,6 +24,7 @@ Distributed under CC0 by the IVOA.
 """
 
 
+import datetime
 import os
 import subprocess
 import tempfile
@@ -49,7 +50,7 @@ def execute(cmd, check_output=None):
 	return output
 
 
-def assert_in_file(file_name, particles):
+def assert_in_file(file_name, *particles):
 	"""raises an assertion error if any of the strings/bytes in particles is
 	not present in the file file_name.
 
@@ -132,22 +133,22 @@ def test_first_run():
 	execute("make", "Latexmk: All targets (Regress.pdf) are up-to-date")
 	execute("pdftotext Regress.pdf")
 
-	assert_in_file("Regress.txt", [
+	assert_in_file("Regress.txt",
 		"Working Group\nStandards and Processes",
 		"This version\nhttps://www.ivoa.net/documents/Regress/20230201",
 		"\nTest, F., Other-Person, A. N.\n",
 		"This is an IVOA Note expressing",
 		"2 Normative Nonsense\n\n3",
-		"‘Key words for use in RFCs to"])
+		"‘Key words for use in RFCs to")
 
 
 def test_template_files():
-	assert_in_file("README.md", [
+	assert_in_file("README.md",
 		"This document describes/defines FILL-THIS-OUT",
-		"see [ivoatexDoc](https://ivoa.net/documents/Notes/IVOATex/)"])
+		"see [ivoatexDoc](https://ivoa.net/documents/Notes/IVOATex/)")
 	
-	assert_in_file("LICENSE", [
-		"Attribution-ShareAlike 4.0 International"])
+	assert_in_file("LICENSE",
+		"Attribution-ShareAlike 4.0 International")
 
 
 def test_archdiag():
@@ -165,9 +166,9 @@ def test_archdiag():
 
 	execute("make")
 
-	assert_in_file("role_diagram.pdf", [b"%PDF-1.5", b"/Kids [ 2 0 R ]"])
+	assert_in_file("role_diagram.pdf", b"%PDF-1.5", b"/Kids [ 2 0 R ]")
 	assert_in_file("Regress.log",
-		["<role_diagram.pdf, id=47, 803.0pt x 602.25pt>"])
+		"<role_diagram.pdf, id=47, 803.0pt x 602.25pt>")
 
 
 def test_extra_macros():
@@ -188,7 +189,7 @@ def test_extra_macros():
 	
 	execute("make Regress.html")
 
-	assert_in_file("Regress.html", [
+	assert_in_file("Regress.html",
 		"<i>meta.ref.ivorn</i>",
 		'<span class="xmlel">FIELD</span>',
 		'<span class="vorent">capability</span>',
@@ -196,7 +197,7 @@ def test_extra_macros():
 		'<p class="admonition-type">Note</p>',
 		'But still be reasonable.',
 		'<table class="tabular">',
-		'<tr><td align="left">a</td>'])
+		'<tr><td align="left">a</td>')
 
 
 def test_verbatims():
@@ -212,9 +213,9 @@ def test_verbatims():
 	execute("make")
 	execute("pdftotext Regress.pdf")
 
-	assert_in_file("Regress.txt", [
+	assert_in_file("Regress.txt",
 		'foo_1 = "\\galt\'s?"\n'
-		'<ja-klar/>'])
+		'<ja-klar/>')
 
 
 def test_referencing():
@@ -225,11 +226,11 @@ def test_referencing():
 	execute("make")
 	execute("pdftotext Regress.pdf")
 
-	assert_in_file("Regress.txt", [
+	assert_in_file("Regress.txt",
 		'We are not talking about (Plante and Stébé et al., 2010)',
 		"Bradner, S. (1997), ‘Key words",
 		"Collections, Services Version 1.1’",
-		"http://doi.org/10.5479/ADS/bib/2010ivoa.spec.1202P"])
+		"http://doi.org/10.5479/ADS/bib/2010ivoa.spec.1202P")
 
 	execute("make bib-suggestions",
 		"2010ivoa.spec.1202P -> 2021ivoa.spec.1102D ?")
@@ -260,10 +261,10 @@ def test_auxiliaryurl_and_test():
 
 	execute("make Regress.html")
 
-	assert_in_file("Regress.html", [
+	assert_in_file("Regress.html",
 		'See   <a href="https://www.ivoa.net/documents/Regress/20230201/'
 		'our-instance.xml">https://www.ivoa.net/documents/Regress/'
-		'20230201/our-instance.xml</a> for'])
+		'20230201/our-instance.xml</a> for')
 
 	edit_file("Makefile", [
 		("test:", "STILTS ?= stilts\ntest:"),
@@ -271,7 +272,32 @@ def test_auxiliaryurl_and_test():
 			'@$(STILTS) xsdvalidate schemaloc="http://www.ivoa.net/xml/VORegistry/v1.0=http://www.ivoa.net/xml/VORegistry/v1.0" doc=our-instance.xml')])
 
 	assert execute("make test")==""
-			
+
+
+def test_git_integration():
+	execute("git init")
+	edit_file("Makefile", [
+		("SOURCES = ", "SOURCES = gitmeta.tex ")])
+	edit_file("Regress.tex", [
+		(r"\input tthdefs", "\\input tthdefs\n\\input gitmeta")])
+	execute("make")
+	execute("pdftotext Regress.pdf")
+
+	assert_in_file("Regress.txt",
+		"Version Control",
+		"Revision ",
+		"-dirty, "+datetime.datetime.now().strftime("%Y-%m-%d"))
+
+	execute("git add Regress.tex")
+	execute("git commit -am 'test commit'")
+	execute("make")
+	execute("pdftotext Regress.pdf")
+
+	with open("Regress.txt", encoding="utf-8") as f:
+		tx = f.read()
+	assert "-dirty" not in tx, "Commit has not removed -dirty tag?"
+	# or perhaps obtain git commit hash and check for its presence?
+
 
 def run_tests():
 		# Sect 2.2, opening
@@ -300,7 +326,10 @@ def run_tests():
 
 			test_referencing()
 
-		test_auxiliaryurl_and_test()
+			test_auxiliaryurl_and_test()
+
+		test_git_integration()
+
 		run_shell()
 
 
