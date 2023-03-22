@@ -24,12 +24,15 @@ Distributed under CC0 by the IVOA.
 """
 
 
+import contextlib
 import datetime
 import os
 import subprocess
 import tempfile
 import traceback
 
+
+####################### Misc. utilities
 
 def execute(cmd, check_output=None):
 	"""execute a subprocess.Popen-compatible command cmd under supervision.
@@ -95,6 +98,21 @@ def edit_file(target_file, replacements):
 		f.write(doc)
 
 
+@contextlib.contextmanager
+def in_dir(dest_dir):
+	"""executes the controlled block within destDir and then returns
+	to the previous directory.
+	"""
+	owd = os.getcwd()
+	os.chdir(dest_dir)
+	try:
+		yield owd
+	finally:
+		os.chdir(owd)
+
+
+########################## Actual tests
+
 def edit_Makefile_template():
 	#	Sect. 2.2.3, paragraph "Main metadata"
 	edit_file("Makefile", [
@@ -118,7 +136,7 @@ def edit_document_template():
 				" abstracts, for instance."),
 			("???? Or remove the section header ????", "This regression test"
 				" supported by the Martian Open Science Cloud project of the"
-				" Mons Olympus philosophical society."),
+				" Olympus Mons philosophical society."),
 			("??? Write something ????", "This is the start of nothing"),
 			(r"\includegraphics[width=0.9\textwidth]{role_diagram.pdf}",
 				"(no figure yet)"),
@@ -221,13 +239,13 @@ def test_verbatims():
 def test_referencing():
 	edit_file("Regress.tex", [
 		(r"\section{Normative Nonsense}", "\\section{Normative Nonsense}\n"
-			"We are not talking about \\citep{2010ivoa.spec.1202P}\n")])
+			"We are not talking about \\citet{2010ivoa.spec.1202P}\n")])
 
 	execute("make")
 	execute("pdftotext Regress.pdf")
 
 	assert_in_file("Regress.txt",
-		'We are not talking about (Plante and Stébé et al., 2010)',
+		'We are not talking about Plante and Stébé et al. (2010)',
 		"Bradner, S. (1997), ‘Key words",
 		"Collections, Services Version 1.1’",
 		"http://doi.org/10.5479/ADS/bib/2010ivoa.spec.1202P")
@@ -299,7 +317,58 @@ def test_git_integration():
 	# or perhaps obtain git commit hash and check for its presence?
 
 
-def run_tests():
+def test_generated_content():
+	# It would certainly be great if we tested schemadoc here, too,
+	# but for now I'm not desperate enough to include a full schema here.
+	edit_file("Regress.tex", [
+		(r"\appendix", "\n".join([
+			r"\section{Generated Nonsense}",
+			"",
+			r"% GENERATED: echo I am building from $TAPURL",
+			r"% /GENERATED",
+			"",
+			r"% GENERATED: !taptable rr.relationship",
+			r"% /GENERATED",
+			"",
+			r"% GENERATED: !vocterms datalink/core",
+			r"% /GENERATED",
+			"",
+			r"\appendix"]))])
+	edit_file("Makefile", [
+		("-include ivoa",
+			"export TAPURL=http://reg.g-vo.org/tap\n\n-include ivoa")])
+
+	execute("make generate")
+	execute("make")
+	execute("pdftotext Regress.pdf")
+
+	assert_in_file("Regress.txt",
+		"I am building from http://reg.g-vo.org/tap", # shell execution
+		"related_id", # from taptable
+		"auxiliary, bias," # from vocterms
+		)
+
+
+def test_html_content():
+	# This test builds on various previous tests and will fail if these
+	# are skipped.
+	execute("make Regress.html")
+	assert_in_file("Regress.html",
+		'<div id="abstract"><h2>Abstract</h2>',
+		' This is an IVOA Note expressing',
+		'<a href="#tth_sEc1">1  Introduction</a>',
+		'<p class="admonition-type">Note</p>',
+		'<a href="#std:RFC2119" id="CITEstd:RFC2119" class="tth_citation">',
+		'(Bradner, 1997)</a>',
+		'<img class="archdiag" src="role_diagram.svg" alt="role_diagram.svg"/>',
+		'<a href="#2010ivoa.spec.1202P" id="CITE2010ivoa.spec.1202P" class="tth_citation">',
+		'Plante and Stébé et al. (2010)</a>',
+		'<span class="verbline">foo_1 = "\\galt\'s?"',
+		'<i>meta.ref.ivorn</i>', # \ucd macro: perhaps make this a span?
+		'<span class="xmlel">FIELD</span>')
+
+
+def run_tests(branch_name):
 		# Sect 2.2, opening
 		os.environ["DOCNAME"] = "Regress"
 		execute("mkdir $DOCNAME")
@@ -308,6 +377,10 @@ def run_tests():
 		# Sect 2.2.2
 		execute("git init")
 		execute("git submodule add https://github.com/ivoa-std/ivoatex")
+		if branch_name:
+			with in_dir("ivoatex"):
+				execute(f"git checkout '{branch_name}'")
+
 		execute("sh ivoatex/make-templates.sh $DOCNAME")
 		execute('git commit -m "Starting $DOCNAME"')
 
@@ -328,22 +401,39 @@ def run_tests():
 
 			test_auxiliaryurl_and_test()
 
-		test_git_integration()
+			test_git_integration()
+
+		test_generated_content()
+
+		test_html_content()
 
 		run_shell()
 
 
+def parse_command_line():
+	import argparse
+	parser = argparse.ArgumentParser(description="ivoaTeX regression test")
+	parser.add_argument("--branch",
+		dest="branch_name", default=None, metavar="NAME",
+		help="run against ivoatex branch NAME rather than master")
+
+	return parser.parse_args()
+
+
 def main():
+	args = parse_command_line()
+
 	with tempfile.TemporaryDirectory("ivoatex") as dir:
 		try:
 			print(f"Testing in {dir}")
 			os.chdir(dir)
-			run_tests()
+			run_tests(args.branch_name)
 		except Exception as ex:
 			traceback.print_exc()
 			print(f"**Failure. Dumping you in a shell in the testbed.")
 			print("Exit the shell to tear it down.")
 			run_shell()
+
 
 if __name__=="__main__":
 	main()
