@@ -37,6 +37,7 @@
 
 \editor{Markus Demleitner}
 
+\previousversion[http://ivoa.net/documents/Notes/IVOATexDoc/20220525]{Version 1.3}
 \previousversion[http://www.ivoa.net/documents/Notes/IVOATexDoc/20180814]{Version
 1.2}
 \previousversion[http://www.ivoa.net/documents/Notes/IVOATexDoc/20160430]{Version
@@ -523,6 +524,12 @@ document; at this point, this will typically emit quite a bit of
 spurious diagnostics.  Unfortunately, real problems may hide within.
 Therefore, we currently recommend a visual inspection of the resulting
 HTML before submission.
+\item \texttt{new-release} updates the Makefile and the document for a
+new version of the document.  It is somewhat smart in that, for
+instance, it will automatically make a REC-1.0 into a WD-1.1, and it
+will automatically add links to the pervious version and a changelog
+section.  While you will probably want to edit the date later on, this
+is the recommended way to bump versions.
 \item \texttt{package} generates a zip file containing everything needed
 for publication in the IVOA's document repository.   Obviously,
 \texttt{DOCVERSION}, \texttt{DOCTYPE}, and \texttt{DOCDATE} in the
@@ -1491,6 +1498,9 @@ errors yet, so again human attention is required.
 \item Push your release branch and merge it into the document's main
 branch.
 
+\item If and when you want to re-start development on the document (now or
+later), run \verb|make new-release| to set up the document and the
+makefile for the new version.
 \end{enumerate}
 
 
@@ -1956,6 +1966,13 @@ them?
 
 \appendix
 \section{Changes from Previous Versions}
+
+\subsection{Changes from Version 1.3}
+
+\item Added a regression test.
+\item Added a \verb|new-release| target to help with, well, advancing
+versions.
+
 
 \subsection{Changes from Version 1.2}
 

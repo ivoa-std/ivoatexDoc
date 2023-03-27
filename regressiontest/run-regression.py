@@ -34,7 +34,7 @@ import traceback
 
 ####################### Misc. utilities
 
-def execute(cmd, check_output=None):
+def execute(cmd, check_output=None, input=None):
 	"""execute a subprocess.Popen-compatible command cmd under supervision.
 
 	Specifically, we run with shell=True so the ivoatexDoc recipes work as
@@ -44,7 +44,8 @@ def execute(cmd, check_output=None):
 	check_stdout is not met.  For now, that is: neither stdout nor stderr
 	contains a string.
 	"""
-	output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+	output = subprocess.check_output(cmd, shell=True, input=input,
+		stderr=subprocess.STDOUT)
 	output = output.decode("utf-8")
 	if isinstance(check_output, str):
 		with open("last-output.txt", "w", encoding="utf-8") as f:
@@ -349,13 +350,34 @@ def test_generated_content():
 		)
 
 
+def test_new_release():
+	# keep newrelease.py from opening web browsers.
+	os.environ["IVOATEX_HUSH"] = "shsh"
+	execute("make new-release", input=b"EN\n\n\n")
+
+	assert_in_file("Makefile",
+		"DOCDATE = "+datetime.date.today().strftime("%Y-%m-%d"),
+		"DOCTYPE = EN")
+	assert_in_file("Regress.tex",
+		"\previousversion[https://www.ivoa.net/documents/Regress/20230201]{NOTE-1.0-20230201}",
+		"%\subsection{Changes from NOTE-1.0-20230201}")
+
+	execute("make new-release", input=b"\n\n\n")
+	assert_in_file("Makefile",
+		"DOCTYPE = PEN",
+		"DOCVERSION = 1.1")
+	assert_in_file("Regress.tex",
+		"\previousversion[https://www.ivoa.net/documents/Regress/20230327]{EN-1.0}",
+		"%\subsection{Changes from EN-1.0}")
+
+
 def test_html_content():
 	# This test builds on various previous tests and will fail if these
 	# are skipped.
 	execute("make Regress.html")
 	assert_in_file("Regress.html",
 		'<div id="abstract"><h2>Abstract</h2>',
-		' This is an IVOA Note expressing',
+		' This is an IVOA Proposed Endorsed Note for review',
 		'<a href="#tth_sEc1">1  Introduction</a>',
 		'<p class="admonition-type">Note</p>',
 		'<a href="#std:RFC2119" id="CITEstd:RFC2119" class="tth_citation">',
@@ -369,12 +391,10 @@ def test_html_content():
 
 
 def run_tests(branch_name):
-		# Sect 2.2, opening
 		os.environ["DOCNAME"] = "Regress"
 		execute("mkdir $DOCNAME")
 		os.chdir(os.environ["DOCNAME"])
 
-		# Sect 2.2.2
 		execute("git init")
 		execute("git submodule add https://github.com/ivoa-std/ivoatex")
 		if branch_name:
@@ -403,7 +423,9 @@ def run_tests(branch_name):
 
 			test_git_integration()
 
-		test_generated_content()
+			test_generated_content()
+
+		test_new_release()
 
 		test_html_content()
 
