@@ -425,9 +425,9 @@ def run_tests(branch_name):
 
 			test_generated_content()
 
-		test_new_release()
+			test_new_release()
 
-		test_html_content()
+			test_html_content()
 
 		run_shell()
 
