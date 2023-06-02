@@ -312,7 +312,7 @@ sh ivoatex/make-templates.sh $DOCNAME
 git commit -m "Starting $DOCNAME"
 \end{lstlisting}
 
-The \verb|ivoatex/startup.sh| script will copy a few template files from
+The \verb|ivoatex/make-templates.sh| script will copy a few template files from
 the ivoatex distribution to the working space.  You could do that
 manually, too; see the script for what files to move where.
 
@@ -1438,9 +1438,11 @@ and inspect the subsequent output of
 for anything unexpected.
 
 \item Add the version-specific URL and designation (e.g.,
-``WD-20100801'') of the currently
+``WD-1.0 2010-08-01'') of the currently
 published document (i.e., the version you are replacing) in the document
-header using \texword{previousversion}.
+header using \texword{previousversion}.  If you used ``make
+new-release`` to get to the current version, ivoatex has already done
+that.
 
 \item Make sure the changelog appendix lists the major changes since the
 last release of the document; it is probably a good idea to re-scan the
