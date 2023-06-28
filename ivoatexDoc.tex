@@ -202,8 +202,12 @@ Based on limited experience, we believe the easiest way to run
 \ivoatex{} on Windows is through cygwin, which also should make make the
 installation of the dependencies reasonably simple.
 
-On
-Debian-derived systems, the dependencies should be present after
+Currently (2023) the standard \TeX\ distribution is
+\TeX Live,\footnote{\url{https://www.tug.org/texlive/}} which is available
+for Linux, macOS and Windows either directly from TUG, or via system
+package managers.
+
+On Debian-derived systems, the dependencies should be present after
 running a distribution-specific adaption of
 \begin{lstlisting}[basicstyle=\footnotesize]
 apt install build-essential texlive-latex-extra zip xsltproc git\
@@ -217,22 +221,22 @@ yum install texlive-scheme-full libxslt make gcc zip\
 \end{lstlisting}
 should pull in everything that is necessary.
 
-With OS X, a convenient way to obtain the dependencies is to install
-MacPorts\footnote{\url{https://www.macports.org/}} and then run
+The macOS version of \TeX Live is
+Mac\TeX.\footnote{\url{https://www.tug.org/mactex/}.  This
+distribution is large because it includes comprehensive
+PDF documentation and a large collection of fonts (\texttt{texdoc <packagename>} is
+useful); there is a smaller `Basic\TeX' download, though this requires
+some post-install package downloads before it is useful.}  It is also
+possible to build \TeX\ using MacPorts (with \texttt{port install
+  texlive}), but this may result in a slightly non-standard
+distribution.\footnote{See \url{http://tex.stackexchange.com/questions/97183/}}.
+It's possible to persuade MacPorts to use a separate Mac\TeX\ install,
+rather than installing its own version,
+but the precise process for that that seems to change from release to release.
+You can install the MacPorts dependencies with
 \begin{lstlisting}
 port install ImageMagick  libxslt ghostscript +full
 \end{lstlisting}
-The canonical OS\,X \TeX\ distribution is the Mac\TeX\ version of
-\TeX Live\footnote{\url{https://www.tug.org/mactex/}}.  It is also
-possible to build \TeX\ using MacPorts (with \texttt{port install
-  texlive}), but this may result in a slightly non-standard
-distribution.\footnote{See
-  \url{http://tex.stackexchange.com/questions/97183/}.
-  Also, MacPorts does add
-  \texttt{texlive} as a dependency on many packages, and so frequently
-  \emph{insists} on trying to build it; if you want to prevent this,
-  there is some discussion at
-  \url{http://comments.gmane.org/gmane.os.apple.macports.user/21526}.}
 
 To see if the full prerequisites are there and compatible with \ivoatex, try
 building an updated version of this document from its github source
