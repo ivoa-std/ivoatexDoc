@@ -54,12 +54,12 @@ def execute(cmd, check_output=None, input=None):
 	return output
 
 
-def assert_in_file(file_name, *particles):
-	"""raises an assertion error if any of the strings/bytes in particles is
-	not present in the file file_name.
+def _assert_for_particles(file_name, assertion, particles):
+	"""implements assert_in_file.
 
-	if particles[0] is a string, content will be utf-8 decoded, else
-	we will make assertions about byte strings.
+	assertion is a callable(particle, content), where particle and
+	content are either both str or both bytes.  It needs to raise
+	an AssertionError if the assertion is wrong.
 	"""
 	with open(file_name, "rb") as f:
 		content = f.read()
@@ -67,7 +67,30 @@ def assert_in_file(file_name, *particles):
 		content = content.decode("utf-8")
 	
 	for part in particles:
+		assertion(part, content)
+
+
+def assert_in_file(file_name, *particles):
+	"""raises an assertion error if any of the strings/bytes in particles is
+	not present in the file file_name.
+
+	if particles[0] is a string, content will be utf-8 decoded, else
+	we will make assertions about byte strings.
+	"""
+	def _(part, content):
 		assert part in content, f"'{part}' not in {file_name}"
+	_assert_for_particles(file_name, _, particles)
+
+
+def assert_not_in_file(file_name, *particles):
+	"""raises an assertion error if any of the strings/bytes in particles is
+	present in the file file_name.
+
+	See assert_in_file for details.
+	"""
+	def _(part, content):
+		assert part not in content, f"'{part}' present in {file_name}"
+	_assert_for_particles(file_name, _, particles)
 
 
 def run_shell():
@@ -175,7 +198,7 @@ def test_archdiag():
 	execute("git add role_diagram.xml")
 	edit_file("Makefile", [
 		("SOURCES = $(DOCNAME).tex", "SOURCES = $(DOCNAME).tex role_diagram.pdf"),
-		("FIGURES = ", "FIGURES = role_diagram.svg"),])
+		("FIGURES =", "FIGURES = role_diagram.svg"),])
 	edit_file("role_diagram.xml", [
 		('<rec name="HiPS" x="430" y="430" w="33"/>',
 			'<thisrec name="Regression" x="430" y="430" w="80"/>')])
@@ -359,16 +382,17 @@ def test_new_release():
 		"DOCDATE = "+datetime.date.today().strftime("%Y-%m-%d"),
 		"DOCTYPE = EN")
 	assert_in_file("Regress.tex",
-		"\previousversion[https://www.ivoa.net/documents/Regress/20230201]{NOTE-1.0-20230201}",
-		"%\subsection{Changes from NOTE-1.0-20230201}")
+		"\previousversion[https://www.ivoa.net/documents/Regress/20230201]{Version 1.0}",
+		"%\subsection{Changes from Version 1.0}")
 
 	execute("make new-release", input=b"\n\n\n")
 	assert_in_file("Makefile",
 		"DOCTYPE = PEN",
-		"DOCVERSION = 1.1")
+		"DOCVERSION = 1.2")
 	assert_in_file("Regress.tex",
-		"\previousversion[https://www.ivoa.net/documents/Regress/20230327]{EN-1.0}",
-		"%\subsection{Changes from EN-1.0}")
+		"\previousversion[https://www.ivoa.net/documents/Regress/20",
+		"]{EN-1.1}",
+		"%\subsection{Changes from EN-1.1}")
 
 
 def test_html_content():
@@ -388,6 +412,28 @@ def test_html_content():
 		'<span class="verbline">foo_1 = "\\galt\'s?"',
 		'<i>meta.ref.ivorn</i>', # \ucd macro: perhaps make this a span?
 		'<span class="xmlel">FIELD</span>')
+
+
+def test_all_bibliography():
+	# with a little bit of luck, this will fail in interesting ways if
+	# we git bibliography entries wrong
+	edit_file("Regress.tex", [
+		(r"\appendix", "\n".join([
+			r"\nocite{*}"
+			r"\appendix"]))])
+	
+	execute("make Regress.html")
+
+	assert_not_in_file("Regress.blg",
+		"isn't style-file defined")
+
+	assert_in_file("Regress.html",
+		"<dt><b>Taylor (2006)</b></dt>", # author tag from ivoabib
+		'<a href="https://ui.adsabs.harvard.edu/abs/2006ASPC..351..666T"><tt>https://ui.', # rendered link
+		'<dt><b>Plante &amp; Demleitner et al. (2018)</b></dt>', # from ivoabib
+		'IVOA Recommendation 25 June 2018', # howpublished rendered
+		'<a href="http://doi.org/10.5479/ADS/bib/2018ivoa.spec.0625P"><tt>http://doi.org/10.5479', # ivoabib link
+	)
 
 
 def run_tests(branch_name):
@@ -428,6 +474,8 @@ def run_tests(branch_name):
 			test_new_release()
 
 			test_html_content()
+
+		test_all_bibliography()
 
 		run_shell()
 
