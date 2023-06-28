@@ -7,7 +7,7 @@ DOCNAME = ivoatexDoc
 DOCVERSION = 1.4
 
 # Publication date, ISO format; update manually for "releases"
-DOCDATE = 2023-03-27
+DOCDATE = 2023-06-27
 
 # What is it you're writing: NOTE, WD, PR, or REC
 DOCTYPE = NOTE
@@ -18,11 +18,11 @@ SOURCES = $(DOCNAME).tex svnsubstitution.tex verbatimstyles.tex gitmeta.tex \
           fields.xml fields-container.xml tapgen.tex \
           schemadoc-example.tex vocterms-example.tex
 
-# List of pixel image files to be included in submitted package 
+# List of pixel image files to be included in submitted package
 FIGURES = triangle_workflow.png
 
 # List of PDF figures (for vector graphics)
-VECTORFIGURES = 
+VECTORFIGURES =
 
 AUX_FILES=custom.css
 
