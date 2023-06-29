@@ -2,6 +2,9 @@
 \input tthdefs
 \input gitmeta
 
+\tolerance=3000
+\hbadness=4000
+
 \usepackage{listings}
 \lstloadlanguages{sh,make,[latex]tex}
 \lstset{flexiblecolumns=true,numberstyle=\small,showstringspaces=False,
@@ -55,7 +58,7 @@ PDF and HTML renderings of the documents with sources in
 plain text suitable for version control, as is desirable for normative
 texts.  This note contains a user guide as well as a discussion of
 \ivoatex's dependencies and its implementation.  It describes the
-software as of May 2022 (release 1.2).
+software as of June 2023 (release 1.3).
 \ivoatex{} has special facilities for the git version control system,
 and the default deployment uses github infrastructure.  Since at this
 point github is the IVOA's designated version control system, this note
@@ -140,8 +143,8 @@ on installation and authoring in sect.~\ref{sect:quick} and continue
 with
 a more thorough discussion of \ivoatex's facilities, focusing
 on enabling automatic production of both HTML and PDF output in
-sect.~\ref{sect:authoring}.  Added in this document's version 1.3,
-sect.~\ref{sect:ivoapol} then documents how ivoatex is intended to be
+sect.~\ref{sect:authoring}.
+Sect.~\ref{sect:ivoapol} then documents how ivoatex is intended to be
 used on github by the various actors; authors and contributors to IVOA
 standards should at least have a brief look at the recommended
 procedures for them in subsection~\ref{sect:contributing}.
@@ -199,8 +202,12 @@ Based on limited experience, we believe the easiest way to run
 \ivoatex{} on Windows is through cygwin, which also should make make the
 installation of the dependencies reasonably simple.
 
-On
-Debian-derived systems, the dependencies should be present after
+Currently (2023) the standard \TeX\ distribution is
+\TeX Live,\footnote{\url{https://www.tug.org/texlive/}} which is available
+for Linux, macOS and Windows either directly from TUG, or via system
+package managers.
+
+On Debian-derived systems, the dependencies should be present after
 running a distribution-specific adaption of
 \begin{lstlisting}[basicstyle=\footnotesize]
 apt install build-essential texlive-latex-extra zip xsltproc git\
@@ -214,22 +221,22 @@ yum install texlive-scheme-full libxslt make gcc zip\
 \end{lstlisting}
 should pull in everything that is necessary.
 
-With OS X, a convenient way to obtain the dependencies is to install
-MacPorts\footnote{\url{https://www.macports.org/}} and then run
+The macOS version of \TeX Live is
+Mac\TeX.\footnote{\url{https://www.tug.org/mactex/}.  This
+distribution is large because it includes comprehensive
+PDF documentation and a large collection of fonts (\texttt{texdoc <packagename>} is
+useful); there is a smaller `Basic\TeX' download, though this requires
+some post-install package downloads before it is useful.}  It is also
+possible to build \TeX\ using MacPorts (with \texttt{port install
+  texlive}), but this may result in a slightly non-standard
+distribution.\footnote{See \url{http://tex.stackexchange.com/questions/97183/}}.
+It's possible to persuade MacPorts to use a separate Mac\TeX\ install,
+rather than installing its own version,
+but the precise process for that that seems to change from release to release.
+You can install the MacPorts dependencies with
 \begin{lstlisting}
 port install ImageMagick  libxslt ghostscript +full
 \end{lstlisting}
-The canonical OS\,X \TeX\ distribution is the Mac\TeX\ version of
-\TeX Live\footnote{\url{https://www.tug.org/mactex/}}.  It is also
-possible to build \TeX\ using MacPorts (with \texttt{port install
-  texlive}), but this may result in a slightly non-standard
-distribution.\footnote{See
-  \url{http://tex.stackexchange.com/questions/97183/}.
-  Also, MacPorts does add
-  \texttt{texlive} as a dependency on many packages, and so frequently
-  \emph{insists} on trying to build it; if you want to prevent this,
-  there is some discussion at
-  \url{http://comments.gmane.org/gmane.os.apple.macports.user/21526}.}
 
 To see if the full prerequisites are there and compatible with \ivoatex, try
 building an updated version of this document from its github source
@@ -298,7 +305,7 @@ control has been enabled.  These are safe to ignore.
 \subsubsection{Installation with git version control}
 
 The recommended way to run \ivoatex{}
-is to use git's submodule feature.  This makes it very simple to keep
+is to use git's submodule feature.  This makes it reasonably simple to keep
 ivoatex up to date without polluting the
 document's history, and it makes it straightforward to
 feed back any improvements you may make to ivoatex.  Hence, you will
@@ -318,7 +325,7 @@ manually, too; see the script for what files to move where.
 
 At this point, create a repository in your account using github.com's web
 interface. Use \$DOCNAME as the repository name, and do not choose any
-template; this procedure will leave you at a web page with a URI like
+template. This procedure will leave you on a web page with a URI like
 \nolinkurl{https://github.com/msdemlei/ivoatexDoc}.
 On that page, you can obtain a
 ``Clone URI'', which is what you can push to.  Use the ssh variant,
@@ -377,7 +384,7 @@ actual formatting.  This in particular concerns XML Schema files, for
 which the IVOA maintains a separate repository, but is by no means
 limited to them.
 
-\ivoatex{} evaluates another variable, \verb|DOCREPO_BASEURL|, where you
+\ivoatex{} evaluates another variable, \verb|DOCREPO_BASEURL|. There, you
 can set a non-standard location of the formatted document.  This
 is only necessary for legacy documents, which is why the variable is not
 mentioned in the template makefile.  For example, this document sets:
@@ -393,14 +400,14 @@ multiple question marks.  These must be filled out as well.
 As illustrated in the template, both \texword{author} and
 \texword{previousversion} support an optional argument giving an URL; for
 \texword{author}, it should normally point to the respective person's
-page in the IVOA wiki, for \texword{previousversion}, it should point to
+page in the IVOA wiki\footnote{You can also have ORCIDs there, which are
+now HTTP URIs, too.}, for \texword{previousversion}, it should point to
 the landing page of the respective document version in the IVOA document
-repository.  Further automation for maintaining document history
-certainly is desirable, and the authors welcome ideas for how this might
-look like.
+repository.  Since \ivoatex~version 1.4, you can use ``make
+new-release`` to manage \texword{previousversion}.
 
 \texword{ivoagroup} should contain the name of the (one) IVOA working or
-interest group under which auspices the document development mainly
+interest group under whose auspices the document development mainly
 happens.  If this is an interest group (which is only possible for
 notes), use \verb|ivoagroup[IG]{...}| to make \ivoatex~use ``Interest
 Group'' rather than ``Working Group'' as the label of the corresponding
@@ -483,7 +490,9 @@ The standard-specific
 architecture diagram will be built by saying \texttt{make
 role\_diagram.svg} and can be viewed using, for instance, common web
 browsers.  Please refrain from editing the SVG with vector graphics
-programs.  In the PDF renderings of the document,
+programs\footnote{You would have to version control it then, too, and that
+typically does not work well for the output of such programs}.
+In the PDF renderings of the document,
 a PDF version of the architecture diagram is
 required.  This is built using \texttt{make role\_diagram.pdf}, and a
 stand-in will be built if your system lacks the software to do this
@@ -527,8 +536,8 @@ HTML before submission.
 \item \texttt{new-release} updates the Makefile and the document for a
 new version of the document.  It is somewhat smart in that, for
 instance, it will automatically make a REC-1.0 into a WD-1.1, and it
-will automatically add links to the pervious version and a changelog
-section.  While you will probably want to edit the date later on, this
+will automatically add links to the previous version and a changelog
+section.  While you will need to edit the DOCDATE in the Makefile later on, this
 is the recommended way to bump versions.
 \item \texttt{package} generates a zip file containing everything needed
 for publication in the IVOA's document repository.   Obviously,
@@ -550,7 +559,7 @@ section~\ref{sect:generated} for details.
 the main ivoatex branch on github.  This will fail if you have
 uncommitted local changes to your ivoatex.
 \item \texttt{\$DOCNAME-draft.pdf} generates a PDF rendering just like a
-simple make, but it will add a watermark against distribution.  This is
+simple make, but it will add a watermark warning against distribution.  This is
 mainly intended for continuous integration workflows.  It only works
 if \verb|pdftk| is installed.
 \end{itemize}
@@ -565,7 +574,7 @@ a special environment that is prepared by the makefile.
 Also note that on systems without latexmk,
 bibliography processing must be initated manually by
 running \texttt{make biblio}; unless authors checked in the bbl file
-this produces, this must be run after a document checkout.
+this produces, this must also be run immediately after a document checkout.
 \end{admonition}
 
 \subsection{Examples}
@@ -579,8 +588,8 @@ github\footnote{\url{https://github.com/ivoa-std}}.
 
 While \ivoatex\ documents can be written much like any other \TeX\
 document, it is advisable to follow certain standards and use special
-facilities for common appearance, easier development, and possible
-evolution of \ivoatex\ itself.
+facilities for common appearance, easier development, and robustness
+against evolution of \ivoatex\ itself.
 
 \subsection{\ivoatex\ Features}
 
@@ -680,7 +689,7 @@ and the content is, currently, simply included in \xmlel{pre} elements.
 
 If a more compact rendering of listings is desired, for instance,
 because larger portions of source code are required in the document,
-listings' \texword{basicstyle} option should be used together with one
+listings' \texword{basic\-style} option should be used together with one
 of LaTeX standard size macros.  This could be in the argument of
 \texword{lstset} in the preamble for a global setting, or on a
 case-by-case basis as in
@@ -1014,7 +1023,8 @@ dependency chain; it is intended that \texttt{make generate} must always
 be manually triggered.  On the one hand, this is because its
 dependencies cannot be generically modelled, given that arbitrary
 commands can be executed.  Document authors are also discouraged from
-providing such dependency information -- it is fairly common that
+providing such dependency information in
+the Makefile -- it is fairly common that
 content generation depends on the availability of external resources
 (e.g., databases or network services), and a document build should not
 fail just because these are unavailable.
@@ -1428,7 +1438,7 @@ document is still affected, enter the \texttt{ivoatex} directory and run
 % no \verb because we're in a TeX argument.
 \texttt{git checkout master \&\& git pull} there.}
 
-\item Create a ``release branch'':
+\item Create a release branch:
 \verb|git checkout -b to-<doctype>-<version>|
 
 \item If the document contains generated content, run
@@ -1468,7 +1478,7 @@ to avoid overfull hboxes (underfull hboxes are not always avoidable).
 critically inspect the architecture diagram and the relationships to
 other standards, in particular whether new versions of those have
 reached REC in the meantime. \verb|make bib-suggestions| will do
-that for you in the case of IVOA recommenations.
+that for you in the case of IVOA recommendations.
 
 \item Run \verb|make ${DOCNAME}.html| and briefly review the produced
 HTML file.  Warnings or even error messages in this process are
@@ -2006,9 +2016,11 @@ them?
 \subsection{Changes from Version 1.3}
 
 \begin{itemize}
-\item Added a regression test.
-\item Added a \verb|new-release| target to help with, well, advancing
+\item Added a regression test for ivoatex.
+\item Documenting the \verb|new-release| target to help with, well, advancing
 versions.
+\item Documenting the vocterms builtin.
+\item Documenting DOCREPO\_BASEURL.
 \end{itemize}
 
 
