@@ -810,6 +810,12 @@ Note that \emph{howpublished} contains the precise document date and the
 \emph{url} points to the actual versioned landing page, not the generic
 one for the standard.
 
+Also note that while the PDF pipeline will happily let you use
+bibliography labels containing ampersands (e.g.,
+\verb|2015A&A...574A..36R|), these will currently not be properly
+escaped in HTML output.  Hence, always replace the ampersand with a plus
+in order to obtain less fragile labels.
+
 \subsection{Graphics}
 
 \subsubsection{Bitmap Graphics}
