@@ -218,7 +218,7 @@ def test_extra_macros():
 		(r"\previousversion{This is the first public release}",
 			"\previousversion[http://ivoa.net/documents/alt]{Regress WD 0.1}"),
 		(r"\appendix",
-			"Do not use \\ucd{meta.ref.ivorn} in \\xmlel{FIELD}"
+			"Do not use \\ucd{meta.ref.ivorn} in (\\xmlel{FIELD})"
 			" or \\vorent{capability}.\n\n"
 			"\\begin{inlinetable}\n\\begin{tabular}{ll}\n\\sptablerule\n"
 			"a&b \\\\\n\\sptablerule\n"
@@ -233,7 +233,7 @@ def test_extra_macros():
 
 	assert_in_file("Regress.html",
 		"<i>meta.ref.ivorn</i>",
-		'<span class="xmlel">FIELD</span>',
+		'(<span class="xmlel">FIELD</span>)',
 		'<span class="vorent">capability</span>',
 		'<div class="admonition">',
 		'<p class="admonition-type">Note</p>',
@@ -281,7 +281,7 @@ def test_referencing():
 def test_auxiliaryurl_and_test():
 	edit_file("Regress.tex", [
 		(r"\section{Normative Nonsense}", "\\section{Normative Nonsense}\n"
-			"See \\auxiliaryurl{our-instance.xml} for details.")])
+			"See (\\auxiliaryurl{our-instance.xml}) for details.")])
 	edit_file("Makefile", [
 		('AUX_FILES =', 'AUX_FILES = our-schema.xml')])
 	with open("our-instance.xml", "w") as f:
@@ -304,9 +304,9 @@ def test_auxiliaryurl_and_test():
 	execute("make Regress.html")
 
 	assert_in_file("Regress.html",
-		'See   <a href="https://www.ivoa.net/documents/Regress/20230201/'
+		'See (<a href="https://www.ivoa.net/documents/Regress/20230201/'
 		'our-instance.xml">https://www.ivoa.net/documents/Regress/'
-		'20230201/our-instance.xml</a> for')
+		'20230201/our-instance.xml</a>) for')
 
 	edit_file("Makefile", [
 		("test:", "STILTS ?= stilts\ntest:"),
@@ -443,6 +443,8 @@ def run_tests(branch_name):
 
 		execute("git init")
 		execute("git submodule add https://github.com/ivoa-std/ivoatex")
+# TODO: make repo configurable like with branch
+#		execute("git submodule add https://github.com/mbtaylor/ivoatex")
 		if branch_name:
 			with in_dir("ivoatex"):
 				execute(f"git checkout '{branch_name}'")
