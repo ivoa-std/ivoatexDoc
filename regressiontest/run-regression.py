@@ -272,7 +272,7 @@ def test_referencing():
 		'We are not talking about Plante and Stébé et al. (2010)',
 		"Bradner, S. (1997), ‘Key words",
 		"Collections, Services Version 1.1’",
-		"http://doi.org/10.5479/ADS/bib/2010ivoa.spec.1202P")
+		"doi:10.5479/ADS/bib/2010ivoa.spec.1202P")
 
 	execute("make bib-suggestions",
 		"2010ivoa.spec.1202P -> 2021ivoa.spec.1102D ?")
