@@ -528,7 +528,8 @@ spurious diagnostics.  Unfortunately, real problems may hide within.
 Therefore, we currently recommend a visual inspection of the resulting
 HTML before submission.
 
-\item \texttt{test} runs document-defined tests.
+\item \texttt{test} runs document-defined tests (see
+sect.~\ref{sect:tests}).
 
 \item \texttt{generate} is used to update machine-generated content in
 the document, typically by the main editor.  See
@@ -546,11 +547,13 @@ section.  While you will need to edit the DOCDATE in the Makefile later on, this
 is the recommended way to bump versions.
 
 \item \texttt{bib-suggestions} inspects the document's references for
-standards with new versions and points these out.
+standards with new versions and points these out (see
+sect.~\ref{sect:citation}).
 
 \item \texttt{upload} produces a package, shows metadata to be uploaded to the
-IVOA document repository (make sure everything is as you expect it) and
-then uploads the package.
+IVOA document repository and
+then uploads the package. See sect.~\ref{sect:submitting} for how to
+responsibly use this target).
 
 \item \texttt{biblio} updates the bibliography (i.e., runs \BibTeX);
 running this is necessary after one of the bibliography files is updated
@@ -744,6 +747,7 @@ particular IVOA recommendations and notes.  Users are welcome to improve
 \texttt{ivoatex/ivoa.bst}.
 
 \subsubsection{Citation Style}
+\label{sect:citation}
 
 As usual in natbib, actual references are made through either writing
 \verb|\citep{tag}|, yielding a form like ``(Einstein 1905)'',
@@ -964,11 +968,12 @@ When authoring standards, it is sometimes necessary to include
 editorial comments of the type ``Need to clarify'' or ``Specification
 incomplete''.  We recommend to use the todonotes package for such
 pieces of text\footnote{Full documentation is available at
-\url{http://www.tex.ac.uk/CTAN/macros/latex/contrib/todonotes/todonotes.pdf}.}.
+\url{https://tug.ctan.org/macros/latex/contrib/todonotes/todonotes.pdf}.}.
 It would be used like this:
 \begin{lstlisting}
 ...
-\usepackage{todonotes}
+\usepackage[textsize=small]{todonotes}
+\setlength{\marginparwidth}{3.5cm}
 ...
 \begin{document}
 \todo{This is an example for a editorial note}.
@@ -1199,6 +1204,7 @@ are not tracked by the Registry.
 
 
 \subsection{Adding tests}
+\label{sect:tests}
 
 Many IVOA documents contain machine-readable artefacts or make
 machine-verifiable claims.  If this is true for your document, consider
@@ -1441,6 +1447,7 @@ test:
 
 
 \subsection{Submitting a Document}
+\label{sect:submitting}
 
 Snapshots of documents should be regularly submitted to the document
 repository as part of the IVOA review process.  While \ivoatex~could
@@ -2033,6 +2040,12 @@ them?
 
 \appendix
 \section{Changes from Previous Versions}
+
+\subsection{Changes from Version 1.4}
+
+\begin{itemize}
+\item Completion of the list of makefile targets.
+\end{itemize}
 
 \subsection{Changes from Version 1.3}
 
