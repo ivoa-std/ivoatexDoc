@@ -520,43 +520,59 @@ file \texttt{\$DOCNAME.pdf}.
 Other makefile targets for author use include:
 
 \begin{itemize}
-\item \texttt{biblio} updates the bibliography (i.e., runs \BibTeX);
-running this is necessary after one of the bibliography files is updated
-or when a new publication is referenced from the document.  This target
-is not necessary on machines that have latexmk.
-\item \texttt{forcetex} rebuilds the PDF unconditionally just as if the
-main source had been edited.  This target is probably not useful on
-machines with latexmk.
+\item \texttt{help} gives a summary of the more common targets.
+
 \item \texttt{\$DOCNAME.html} generates an HTML rendering of the
 document; at this point, this will typically emit quite a bit of
 spurious diagnostics.  Unfortunately, real problems may hide within.
 Therefore, we currently recommend a visual inspection of the resulting
 HTML before submission.
+
+\item \texttt{test} runs document-defined tests.
+
+\item \texttt{generate} is used to update machine-generated content in
+the document, typically by the main editor.  See
+section~\ref{sect:generated} for details.
+
+\item \texttt{update} updates the ivoatex submodule to whatever is in
+the main ivoatex branch on github.  This will fail if you have
+uncommitted local changes to your ivoatex.
+
 \item \texttt{new-release} updates the Makefile and the document for a
 new version of the document.  It is somewhat smart in that, for
 instance, it will automatically make a REC-1.0 into a WD-1.1, and it
 will automatically add links to the previous version and a changelog
 section.  While you will need to edit the DOCDATE in the Makefile later on, this
 is the recommended way to bump versions.
+
+\item \texttt{bib-suggestions} inspects the document's references for
+standards with new versions and points these out.
+
+\item \texttt{upload} produces a package, shows metadata to be uploaded to the
+IVOA document repository (make sure everything is as you expect it) and
+then uploads the package.
+
+\item \texttt{biblio} updates the bibliography (i.e., runs \BibTeX);
+running this is necessary after one of the bibliography files is updated
+or when a new publication is referenced from the document.  This target
+is not necessary on machines that have latexmk.
+
+\item \texttt{forcetex} rebuilds the PDF unconditionally just as if the
+main source had been edited.  This target is probably not useful on
+machines with latexmk.
+
 \item \texttt{package} generates a zip file containing everything needed
 for publication in the IVOA's document repository.   Obviously,
 \texttt{DOCVERSION}, \texttt{DOCTYPE}, and \texttt{DOCDATE} in the
 Makefile should be updated as necessary before this target is built.
 The result is a zip file with a name compliant to the IVOA document
 standards \citep{2017ivoa.spec.0517G}.
+
 \item \texttt{arxiv-upload}  produces a file arxiv-upload.tar.gz for
 the current document.  ArXiv uploads are automatically done by the
 document coordinator for RECs and ENs, and editors \emph{should not} do
 them themselves.  Authors of Notes may upload their documents to arXiv.
-\item \texttt{upload} produces a package, shows metadata to be uploaded to the
-IVOA document repository (make sure everything is as you expect it) and
-then uploads the package.
-\item \texttt{generate} is used to update machine-generated content in
-the document, typically by the main editor.  See
-section~\ref{sect:generated} for details.
-\item \texttt{update} updates the ivoatex submodule to whatever is in
-the main ivoatex branch on github.  This will fail if you have
-uncommitted local changes to your ivoatex.
+
 \item \texttt{\$DOCNAME-draft.pdf} generates a PDF rendering just like a
 simple make, but it will add a watermark warning against distribution.  This is
 mainly intended for continuous integration workflows.  It only works
