@@ -195,6 +195,8 @@ here), and \texttt{flex} for HTML generation.
 \item Editors will need the \texttt{zip} archiver for package generation.
 \item Editors will need \texttt{imageMagick} and \texttt{ghostscript} if
 vector graphics is to be processed into HTML.
+\item Editors will need \texttt{pdf2svg} if TikZ images are in a
+document converted to HTML.
 \end{itemize}
 
 Based on limited experience, we believe the easiest way to run
@@ -871,21 +873,75 @@ broken.
 \subsubsection{Vector Graphics}
 \label{sect:vectorgraphics}
 
-The only vector graphics format well supported in \ivoatex\ is PDF.  PDF
-files can be directly used in \texword{includegraphics}.  The names of
-such figures must be listed in the makefile's \texttt{VECTORFIGURES}
+Without major hacking to produce suitable output in both HTML and PDF,
+vector graphics in ivoatex must be in either PDF or TikZ. Since ivoatex
+internally uses SVG for the architecture diagram, it would be
+easy to extend it to support SVG, but this has not been done yet.
+
+PDF files can be directly used in \texword{includegraphics}.  The names of
+such figures must be then be listed in the makefile's \texttt{VECTORFIGURES}
 variable.
 
 From \texttt{VECTORFIGURES}, \ivoatex\ arranges that, when a PDF figure
 \texttt{foo.pdf} is used, the HTML target depends on a file called
-\texttt{foo.png}.  This PNG can be generated automatically by
+\texttt{foo.png}\footnote{So, yes, at this point PDFs are shown as
+bitmaps in the HTML.  In the PDF output, they remain vectors, though.}.
+This PNG will usually be generated automatically by
 \ivoatex\ using a combination of ghostscript and ImageMagick.  It may
 sometimes be preferable to perform a custom conversion by hand (e.g.,
 more compact representation with bilevel source images), in which case
-the pre-rendered PNG should be included in the version controlled
+the pre-rendered PNG must be included in the version controlled
 repository.  This also
 has the advantage that neither ghostscript nor ImageMagick are build
 dependencies of the document.
+
+For authoring graphics directly in \LaTeX,
+TikZ\footnote{\url{https://github.com/pgf-tikz/pgf}} is a common choice.
+However, because of the way \ivoatex{} produces HTML output, inline
+\verb|tikzpicture|-s would only end up as replacement text in HTML.  To
+avoid this, in \ivoatex{} each \verb|tikzpicture| environment must sit
+in a file of its own, and the extension of this file needs to be
+\verb|.tikz.tex|.  You can include calls to \verb|\usetikzlibrary|
+in such files.
+
+As usual for figures in \ivoatex, the name of this file should be added
+to the \verb|FIGURES| Makefile variable in order to keep dependency
+calculations reliable (but it is less important than with bitmap
+graphics, which would be left out of packages if not listed, leading to
+broken HTML renderings).
+
+To display such a figure, write something like
+\verb|\tikzfigure{some-diagram}| in the \LaTeX{} source.  In the
+PDF-rendering branch, this is not much more than an \verb|include|, in
+HTML, this will lead to a reference to an SVG called
+\verb|some-diagram.tikz.svg|.  To make ivoatex build this SVG, include
+that name in the \verb|VECTORFIGURES| Makefile variable.
+
+IvoatexDoc has an example TikZ image called \verb|hello.tikz.tex|
+containing this:
+
+\lstinputlisting[language=XSLT,basicstyle=\footnotesize]{hello.tikz.tex}
+
+\noindent and hence has in its Makefile
+
+\begin{lstlisting}
+FIGURES = hello.tikz.tex
+VECTORFIGURES = hello.tikz.svg
+\end{lstlisting}
+
+In this way \verb|\tikzfigure{hello}| yields: \tikzfigure{hello}.  You
+will of course have the \verb|.tikz.tex| file under version control.
+However, as ivoatexDoc itself does, you should not put the generated SVG
+under version control unless it is paramount to avoid a pdf2svg as a
+build dependency.  The diffs on that SVG will be ugly, confusing, and
+useless.
+
+To develop such figures, it is probably most convenient to run
+\verb|make hello.tikz.pdf| and inspect the resultin PDF.
+
+To build HTML documents containing TikZ figures, you need to
+install pdf2svg\footnote{In Debian under that name or at
+\url{http://www.cityinthesky.co.uk/opensource/pdf2svg/}}.
 
 \subsection{Tables}
 
