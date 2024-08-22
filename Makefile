@@ -14,15 +14,15 @@ DOCTYPE = NOTE
 
 # Source files for the TeX document (but the main file must always
 # be called $(DOCNAME).tex
-SOURCES = $(DOCNAME).tex svnsubstitution.tex verbatimstyles.tex gitmeta.tex \
+SOURCES = $(DOCNAME).tex verbatimstyles.tex gitmeta.tex \
           fields.xml fields-container.xml tapgen.tex \
           schemadoc-example.tex vocterms-example.tex
 
 # List of pixel image files to be included in submitted package
-FIGURES = triangle_workflow.png
+FIGURES = triangle_workflow.png hello.tikz.tex
 
 # List of PDF figures (for vector graphics)
-VECTORFIGURES =
+VECTORFIGURES = hello.tikz.svg
 
 AUX_FILES=custom.css
 
