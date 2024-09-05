@@ -14,7 +14,7 @@ DOCTYPE = NOTE
 
 # Source files for the TeX document (but the main file must always
 # be called $(DOCNAME).tex
-SOURCES = $(DOCNAME).tex svnsubstitution.tex verbatimstyles.tex gitmeta.tex \
+SOURCES = $(DOCNAME).tex verbatimstyles.tex gitmeta.tex \
           fields.xml fields-container.xml tapgen.tex \
           schemadoc-example.tex vocterms-example.tex
 
