@@ -902,12 +902,20 @@ calculations reliable (but it is less important than with bitmap
 graphics, which would be left out of packages if not listed, leading to
 broken HTML renderings).
 
-To display such a figure, write something like
-\verb|\tikzfigure{some-diagram}| in the \LaTeX{} source.  In the
-PDF-rendering branch, this is not much more than an \verb|include|, in
-HTML, this will lead to a reference to an SVG called
-\verb|some-diagram.tikz.svg|.  To make ivoatex build this SVG, include
-that name in the \verb|VECTORFIGURES| Makefile variable.
+To display such a figure, first add
+
+\begin{lstlisting}
+\usepackage{tikz}
+\end{lstlisting}
+
+\noindent in your document's preamble.  Then write
+\verb|\tikzfigure{some-diagram}| where the figure is supposed to show
+up.
+
+In the PDF-rendering branch, this is not much more than an
+\verb|include|, whereas in HTML, this will lead to a reference to an SVG
+called \verb|some-diagram.tikz.svg|.  To make ivoatex build this SVG,
+include that name in the \verb|VECTORFIGURES| Makefile variable.
 
 IvoatexDoc has an example TikZ image called \verb|hello.tikz.tex|
 contaning this:
@@ -921,15 +929,16 @@ FIGURES = hello.tikz.tex
 VECTORFIGURES = hello.tikz.svg
 \end{lstlisting}
 
-In this way \verb|\tikzfigure{hello}| yields: \tikzfigure{hello}.  You
-will of course have the \verb|.tikz.tex| file under version control.
-However, as ivoatexDoc itself does, you should not put the generated SVG
-under version control unless it is paramount to avoid a pdf2svg as a
-build dependency.  The diffs on that SVG will be ugly, confusing, and
-useless.
+In this way \verb|\tikzfigure{hello}| yields: \tikzfigure{hello}.
+
+Keep
+the \verb|.tikz.tex| file under version control.  As ivoatexDoc itself
+does, you should not put the generated SVG under version control unless
+it is paramount to avoid pdf2svg as a build dependency.  The diffs on
+that SVG will be ugly, confusing, and useless.
 
 To develop such figures, it is probably most convenient to run
-\verb|make hello.tikz.pdf| and inspect the resultin PDF.
+\verb|make hello.tikz.pdf| and inspect the resulting PDF.
 
 To build HTML documents containing TikZ figures, you need to
 install pdf2svg\footnote{In Debian under that name or at
