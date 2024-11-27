@@ -419,7 +419,6 @@ though.}:
 
 \begin{compactitem}
 \item Applications
-\item DAL
 \item Data Access Layer
 \item Data Models
 \item Grid and Web Services
@@ -1681,9 +1680,9 @@ git push
 \end{lstlisting}
 
 This arranges for a document build to be run at every change to the main
-branch and when a pull request is created.  Since the github's workflow
-engine will spin up a container for that and install \ivoatex's
-prerequisites on that, this may take of order of minutes.  For a pull
+branch and when a pull request is created.  Since github's workflow
+engine will spin up a container and install \ivoatex's
+prerequisites, this may take of order of minutes.  For a pull
 request, the built PDF is found under the ``Checks'' tab and then in
 ``Artifacts''.
 
@@ -1692,6 +1691,13 @@ Releases $\to$ Auto PDF Preview.  You may want to have a link toward
 this PDF preview; in that case, simply include the Markdown snippet that
 the above make command prints into \verb|README.md|.
 
+To remove the CI instructions and thus no longer run github actions
+after pushes, run \verb|make clear-ci| locally, commit and push.
+
+Now and then github performs breaking updates on their CI
+infrastructure, or the \ivoatex~maintainers may change the actions
+taken.  When either happens, update the CI instructions by running
+\verb|make update-ci|, again followed by committing and pushing.
 
 \subsection{Managing Changes}
 \label{sect:chmgt}
