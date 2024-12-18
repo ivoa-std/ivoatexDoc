@@ -546,6 +546,14 @@ will automatically add links to the previous version and a changelog
 section.  While you will need to edit the DOCDATE in the Makefile later on, this
 is the recommended way to bump versions.
 
+\item \texttt{tag} creates a git tag for the current document version and
+pushes it to the origin server.  This is for when you do a release; see
+sect.~\ref{sect:submitting} for details.
+
+\item \texttt{untag} removes the tag for the current document version.
+This is for when you have tagged a release that you had to change after
+you ran \verb|make tag|.
+
 \item \texttt{bib-suggestions} inspects the document's references for
 standards with new versions and points these out (see
 sect.~\ref{sect:citation}).
@@ -1530,6 +1538,16 @@ should probably be more specific on \textit{which} release) -- this
 will update the source if VCS information is represented as per
 section~\ref{sect:vcs}.
 
+\item Push your release branch, do a github pull request and merge it
+into the document's main branch.  Unless you had to do major changes
+during the above steps, you do not need to wait for a review and can
+force-merge in this situation.
+
+\item Run \verb|git checkout main| (or \verb|git checkout master| for
+non-migrated repos), followed by \verb|git pull| to bring your local
+copy up to date.  You are now on a revision that will permantently be in
+the document history.
+
 \item Run \verb|make upload|.  This will ask you to review the document
 metadata in a python dictionary, let you add a note for the document
 coordinator and performs the upload.
@@ -1539,8 +1557,8 @@ document directory; this contains the raw HTML the uploading script got
 back from the document repository.  We do not automatically check for
 errors yet, so again human attention is required.
 
-\item Push your release branch and merge it into the document's main
-branch.
+\item Run \verb|make tag| to create a tag corresponding to the document
+you just uploaded.
 
 \item If and when you want to re-start development on the document (now or
 later), run \verb|make new-release| to set up the document and the
