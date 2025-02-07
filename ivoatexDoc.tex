@@ -1226,7 +1226,8 @@ the IVOA vocabulary repository.
 \label{sect:stdrec}
 
 IVOA recommendations and endorsed notes must be registered using the
-schema from StandardsRegExt \citep{2012ivoa.spec.0508H}.  A major use
+schema from StandardsRegExt \citep{2012ivoa.spec.0508H} when they need
+ivoids to themselves.  A major use
 case for this is to allow references to standards from other registry
 records. The prototypcial example for this is the \xmlel{standardID}
 attribute of VOResource \xmlel{capability} elements that contains
@@ -1584,7 +1585,10 @@ of the output is necessary.
 variables according to the new document release.
 
 \item If uploading a REC or EN, update (or create) the standards record
-and send it to the RofR (cf.~sect.~\ref{sect:stdrec}).
+and send it to the RofR (cf.~sect.~\ref{sect:stdrec}).  In general,
+running \verb|python ivoatex/update-stdref.py <your-record.vor>| should
+be enough; but do inspect the record after that and see if other updates
+are in order (e.g., for changed author lists, updated abstracts, etc.).
 
 \item Run \verb|make package|.  If no major problems become visible,
 
