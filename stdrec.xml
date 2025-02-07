@@ -2,14 +2,14 @@
 It has *not* been uploaded into the RofR and should not be, as ivoatexDoc
 is just a Note and we don't want to clutter the registry. -->
 
-<ri:Resource 
-	xsi:type="vstd:Standard" 
-	created="2018-04-17T08:58:00Z" 
-	updated="2018-04-17T08:58:00Z" 
+<ri:Resource
+	xsi:type="vstd:Standard"
+	created="2018-04-17T08:58:00Z"
+	updated="2018-04-17T08:58:00Z"
 	status="active"
-	xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" 
-	xmlns:vstd="http://www.ivoa.net/xml/StandardsRegExt/v1.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0"
+	xmlns:vstd="http://www.ivoa.net/xml/StandardsRegExt/v1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:ri="http://www.ivoa.net/xml/RegistryInterface/v1.0"
 	xsi:schemaLocation="http://www.ivoa.net/xml/VOResource/v1.0
 		http://www.ivoa.net/xml/VOResource/v1.0
@@ -20,7 +20,7 @@ is just a Note and we don't want to clutter the registry. -->
 
   <title>The ivoaTeX Document Preparation System</title>
   <shortName>ivoatexDoc</shortName>
-  <identifier>ivo://ivoa.net/std/ivoatexDocidentifier> 
+  <identifier>ivo://ivoa.net/std/ivoatexDoc</identifier>
   <curation>
     <publisher>IVOA</publisher>
 
@@ -37,7 +37,7 @@ is just a Note and we don't want to clutter the registry. -->
       <name>Molinaro, M.</name>
     </creator>
 
-    <date role="update">2016-04-30</date>
+    <date role="Updated">2016-04-30</date>
     <version>1.1</version>
     <contact>
       <name>IVOA Committee on Standards and Processes</name>
@@ -45,8 +45,8 @@ is just a Note and we don't want to clutter the registry. -->
     </contact>
   </curation>
   <content>
-    <subject>Virtual observatory</subject>
-    <subject>Pubication tools</subject>
+    <subject>virtual-observatories</subject>
+    <subject>software-documentation</subject>
 
     <description>
     	This note describes the IVOATeX document preparation system for IVOA
