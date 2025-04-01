@@ -513,6 +513,7 @@ large diffs for minor edits.  Authors desiring a reflow after many edits
 are encouraged to concentrate them in a separate, reflow-only commit.
 
 \paragraph{Makefile targets}
+\label{sec:targets}
 
 The PDF version of the document is built by the makefile's default rule,
 so running \texttt{make} will usually by enough.  This will produce a
@@ -2127,12 +2128,76 @@ Perhaps we should simply make latexmk a hard dependency and forget about
 them?
 
 \appendix
+\section{Containerised Operation}
+
+In particular on proprietary operating systems, or when authors do not
+have root privileges on their machines, installing ivoatex's
+dependencies may be hard or impossible.  In these cases, running ivoatex
+in a container may be an attractive alternative.
+
+A container file for this purpose is maintained at
+\url{https://github.com/ivoa/ivoatex-docker}.  In the simplest case --
+when pre-built-images are available -- the workflow then is like this:
+
+\begin{lstlisting}
+$ git clone https://github.com/ivoa-std/ivoatexDoc
+$ cd ivoatexDoc
+$ DOC_PATH=$(pwd)
+$ podman run --rm --tty --interactive \
+    --volume "${DOC_PATH:?}:/document:rw,z" \
+    ghcr.io/ivoa/ivoatex-docker:latest
+  # (from here on, you are in the container)
+$ make
+\end{lstlisting}
+
+At this point, you should see the built document \verb|ivoatexDoc.pdf|;
+the other make targets discussed in Sect.~\ref{sec:targets} should be
+available as well.  You can still use your host system's tools (editors,
+PDF viewers, etc) within the directory on the host system.  Files can be
+inspected and changed from both sides without any need to, say, restart
+the container.
+
+If your machine still has docker rather than podman, see
+ivoatex-docker's README.
+
+If there is no pre-built container for your architecture, this will
+fail.  In that case, you can build the container yourself like this
+(assuming a bash-like shell):
+
+\begin{lstlisting}
+$ git clone https://github.com/ivoa/ivoatex-docker.git
+$ cd ivoatex-docker/docker
+$ podman build \
+  --build-arg builddate="$(date '+%Y.%m.%d')" \
+  --build-arg buildtime="$(date '+%Y-%m-%dT%H:%M:%S')" \
+  -t ivoatex .
+\end{lstlisting}
+
+The podman call will download of order of 1 GByte of data and will take
+a while, but you only need to do that once (or when ivoatex's
+dependencies have grown stale).
+
+Building a document will then proceed as above, except that the podman
+now needs to be called like this:
+
+\begin{lstlisting}
+$ podman run --rm --tty --interactive \
+  --volume "${DOC_PATH:?}:/document:rw,z" \
+  ivoatex
+\end{lstlisting}
+
 \section{Changes from Previous Versions}
 
 \subsection{Changes from Version 1.4}
 
 \begin{itemize}
 \item Completion of the list of makefile targets.
+\item Added documentation for doing figures with TikZ.
+\item Documented make tag/untag.
+\item Amended the submission checklist, in particular as regards
+tagging.
+\item Added an appendix on containerised operation.
+\item Moved the regression test to ivoatex proper.
 \end{itemize}
 
 \subsection{Changes from Version 1.3}
