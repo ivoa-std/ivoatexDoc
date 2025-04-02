@@ -40,6 +40,7 @@
 
 \editor{Markus Demleitner}
 
+\previousversion[http://ivoa.net/documents/Notes/IVOATexDoc/20230627]{Version 1.4}
 \previousversion[http://ivoa.net/documents/Notes/IVOATexDoc/20220525]{Version 1.3}
 \previousversion[http://www.ivoa.net/documents/Notes/IVOATexDoc/20180814]{Version
 1.2}
@@ -58,7 +59,7 @@ PDF and HTML renderings of the documents with sources in
 plain text suitable for version control, as is desirable for normative
 texts.  This note contains a user guide as well as a discussion of
 \ivoatex's dependencies and its implementation.  It describes the
-software as of June 2023 (release 1.3).
+software as of April 2024 (release 1.5).
 \ivoatex{} has special facilities for the git version control system,
 and the default deployment uses github infrastructure.  Since at this
 point github is the IVOA's designated version control system, this note
@@ -196,14 +197,14 @@ here), and \texttt{flex} for HTML generation.
 \item Editors will need \texttt{imageMagick} and \texttt{ghostscript} if
 vector graphics is to be processed into HTML.
 \item Editors will need \texttt{pdf2svg} if TikZ images are in a
-document converted to HTML.
+document when it is converted to HTML.
 \end{itemize}
 
 Based on limited experience, we believe the easiest way to run
 \ivoatex{} on Windows is through cygwin, which also should make make the
 installation of the dependencies reasonably simple.
 
-Currently (2023) the standard \TeX\ distribution is
+Currently (2025) the standard \TeX\ distribution is
 \TeX Live,\footnote{\url{https://www.tug.org/texlive/}} which is available
 for Linux, macOS and Windows either directly from TUG, or via system
 package managers.
@@ -211,7 +212,7 @@ package managers.
 On Debian-derived systems, the dependencies should be present after
 running a distribution-specific adaption of
 \begin{lstlisting}[basicstyle=\footnotesize]
-apt install build-essential texlive-latex-extra zip xsltproc git\
+apt install build-essential texlive-latex-extra zip xsltproc git latexmk\
   texlive-bibtex-extra imagemagick ghostscript cm-super librsvg2-bin
 \end{lstlisting}
 (cm-super contains vector versions of computer modern fonts in T1
@@ -231,7 +232,7 @@ some post-install package downloads before it is useful.}  It is also
 possible to build \TeX\ using MacPorts (with \texttt{port install
   texlive}), but this may result in a slightly non-standard
 distribution.\footnote{See \url{http://tex.stackexchange.com/questions/97183/}}.
-It's possible to persuade MacPorts to use a separate Mac\TeX\ install,
+It is possible to persuade MacPorts to use a separate Mac\TeX\ install,
 rather than installing its own version,
 but the precise process for that that seems to change from release to release.
 You can install the MacPorts dependencies with
@@ -404,8 +405,8 @@ As illustrated in the template, both \texword{author} and
 page in the IVOA wiki\footnote{You can also have ORCIDs there, which are
 now HTTP URIs, too.}, for \texword{previousversion}, it should point to
 the landing page of the respective document version in the IVOA document
-repository.  Since \ivoatex~version 1.4, you can use ``make
-new-release`` to manage \texword{previousversion}.
+repository.  Since \ivoatex~version 1.4, you can use
+\verb|make new-release| to manage \texword{previousversion}.
 
 \texword{ivoagroup} should contain the name of the (one) IVOA working or
 interest group under whose auspices the document development mainly
@@ -464,7 +465,7 @@ git add role_diagram.xml
 \end{lstlisting}
 
 This is just an abstract specification that is compiled into images.  To
-ensure this happens, \verb|role_diagram.svg| to \verb|FIGURES| in the
+ensure this happens, add \verb|role_diagram.svg| to \verb|FIGURES| in the
 Makefile.  As long as the \LaTeX~toolchain does not support the SVG
 image format, you must additionally append \verb|role_diagram.pdf| to
 \verb|SOURCES|.
@@ -491,7 +492,7 @@ architecture diagram will be built by saying \texttt{make
 role\_diagram.svg} and can be viewed using, for instance, common web
 browsers.  Please refrain from editing the SVG with vector graphics
 programs\footnote{You would have to version control it then, too, and that
-typically does not work well for the output of such programs}.
+typically does not work well for the output of such programs.}.
 In the PDF renderings of the document,
 a PDF version of the architecture diagram is
 required.  This is built using \texttt{make role\_diagram.pdf}, and a
@@ -583,7 +584,7 @@ standards \citep{2017ivoa.spec.0517G}.
 
 \item \texttt{arxiv-upload}  produces a file arxiv-upload.tar.gz for
 the current document.  ArXiv uploads are automatically done by the
-document coordinator for RECs and ENs, and editors \emph{should not} do
+document coordinator for RECs and ENs, and editors should not do
 them themselves.  Authors of Notes may upload their documents to arXiv.
 
 \item \texttt{\$DOCNAME-draft.pdf} generates a PDF rendering just like a
@@ -649,8 +650,8 @@ lists in the style of HTML \xmlel{dl}, and it will be translated into
 one.  Use \verb|\item[term]| for the term to be defined
 (the construct this item is in is a \texword{bigdescription}).
 \item[\texword{auxilaryurl}] A macro expanding a path relative to the
-current document to a full URL.  This is discussed more extensively in
-sect.~\ref{sect:links}
+current document to a full URL.  This is discussed in
+sect.~\ref{sect:links}.
 \item[\texword{inlinetable}] This is an environment for showing tables
 in-place (rather than as an insertion potentially somewhere else, as
 LaTeX's table environment does).  This may lead to rather empty pages
@@ -802,7 +803,7 @@ As part of bibliography management, authors should occasonally run
 make bib-suggestions
 \end{lstlisting}
 
-This will suggest updates to what IVOA standards the document cites
+\noindent This will suggest updates to what IVOA standards the document cites
 based on which documents obsoleted which other documents.  Note that
 these suggestions should not be followed where references actually are
 version-sharp.
@@ -910,7 +911,7 @@ calculations reliable (but it is less important than with bitmap
 graphics, which would be left out of packages if not listed, leading to
 broken HTML renderings).
 
-To display such a figure, write something like
+To display such a figure, write
 \verb|\tikzfigure{some-diagram}| in the \LaTeX{} source.  In the
 PDF-rendering branch, this is not much more than an \verb|include|, in
 HTML, this will lead to a reference to an SVG called
@@ -932,12 +933,12 @@ VECTORFIGURES = hello.tikz.svg
 In this way \verb|\tikzfigure{hello}| yields: \tikzfigure{hello}.  You
 will of course have the \verb|.tikz.tex| file under version control.
 However, as ivoatexDoc itself does, you should not put the generated SVG
-under version control unless it is paramount to avoid a pdf2svg as a
+under version control unless it is paramount to avoid pdf2svg as a
 build dependency.  The diffs on that SVG will be ugly, confusing, and
 useless.
 
 To develop such figures, it is probably most convenient to run
-\verb|make hello.tikz.pdf| and inspect the resultin PDF.
+\verb|make hello.tikz.pdf| and inspect the result in PDF.
 
 To build HTML documents containing TikZ figures, you need to
 install pdf2svg\footnote{In Debian under that name or at
@@ -1009,7 +1010,10 @@ XML schema files should not be distributed in this way, as they have
 conventional places within the ivoa.net URL hierarchy.
 
 For instance, \verb|\auxiliaryurl{custom.css}| expands to
-$$\hbox{\auxiliaryurl{custom.css},}$$ in this document,
+\begin{center}
+\auxiliaryurl{custom.css}
+\end{center}
+\noindent in this document,
 which is, for each release of this
 document, the URL the example custom CSS file mentioned in the example
 in sect.~\ref{sect:customcss} is found at.  The preferred way to include
@@ -1180,7 +1184,7 @@ the XML schema file \texttt{SchemaSource.xsd}.
 \paragraph{vocterms}
 
 The \texttt{vocterms} builtin formats the non-deprecated identifiers for
-an IVOA vocabulary \citep{2021ivoa.spec.0525D} into a comma-separated
+an IVOA vocabulary \citep{2023ivoa.spec.0206D} into a comma-separated
 list.  It takes one argument, the vocabulary name (or, for legacy
 vocabularies that have path-like names, the relative path; in practice:
 whatever is behind \texttt{rdf/} in the vocabulary URI).  For instance,
@@ -1263,6 +1267,13 @@ registered.
 Most of the metadata to be filled in actually already is available in
 structured form in \ivoatex.  Contributions that help automating
 creation and maintenance of the standards record exploiting this are welcome.
+
+To update an existing standards record when doing a document release,
+since \ivoatex~1.5 you can run
+
+\begin{lstlisting}
+python3 ivoatex/update-stdrec.py <stdrec-name>
+\end{lstlisting}
 
 With the upload of a proposed recommendation to the document repository,
 the editor should send the standards record to the registry of
@@ -1401,7 +1412,7 @@ Some notes on this:
 lines with \verb|@| in order to keep the output tidy.
 
 \item Tests of this kind will almost always use remote network
-resources.  If possible, do not hide these within the (potentially
+resources.  If possible, do not hide their addresses within the (potentially
 complex) Python code but make them explicit (and easily adaptable) in
 the Makefile.
 
@@ -1509,7 +1520,7 @@ Then prepare a container document \verb|fields-container.xml| like:
 \lstinputlisting[basicstyle=\footnotesize]{fields-container.xml}
 and include a \verb|test| target in the Makefile like:
 \begin{lstlisting}[basicstyle=\footnotesize]
-# This test needs STILTS
+# This test needs stilts
 test:
         $(STILTS) votlint votable=fields-container.xml
 \end{lstlisting}
@@ -1536,7 +1547,9 @@ document is still affected, enter the \texttt{ivoatex} directory and run
 \texttt{git checkout master \&\& git pull} there.}
 
 \item Create a release branch:
-\verb|git checkout -b to-<doctype>-<version>|
+\verb|git checkout -b to-<doctype>-<version>|.  Before you do that, make
+sure there are no open pull requests and for good measure, do a
+\verb|git pull|.
 
 \item If the document contains generated content, run
 \verb|make generate|
@@ -1547,8 +1560,9 @@ for anything unexpected.
 \item Add the version-specific URL and designation (e.g.,
 ``WD-1.0 2010-08-01'') of the currently
 published document (i.e., the version you are replacing) in the document
-header using \texword{previousversion}.  If you used ``make
-new-release`` to get to the current version, ivoatex has already done
+header using \texword{previousversion}.  If you used
+\verb|make new-release|
+to get to the current version, ivoatex has already done
 that.
 
 \item Make sure the changelog appendix lists the major changes since the
@@ -1587,14 +1601,14 @@ variables according to the new document release.
 
 \item If uploading a REC or EN, update (or create) the standards record
 and send it to the RofR (cf.~sect.~\ref{sect:stdrec}).  In general,
-running \verb|python ivoatex/update-stdref.py <your-record.vor>| should
+running \verb|python ivoatex/update-stdrec.py <your-record.vor>| should
 be enough; but do inspect the record after that and see if other updates
 are in order (e.g., for changed author lists, updated abstracts, etc.).
 
 \item Run \verb|make package|.  If no major problems become visible,
 
 \item run \verb|git commit -am "Preparing for the release"| (the message
-should probably be more specific on \textit{which} release) -- this
+should probably be more specific on \textit{which} release); this
 will update the source if VCS information is represented as per
 section~\ref{sect:vcs}.
 
@@ -1610,7 +1624,7 @@ the document history.
 
 \item Run \verb|make upload|.  This will ask you to review the document
 metadata in a python dictionary, let you add a note for the document
-coordinator and performs the upload.
+coordinator and perform the upload.
 
 \item Review the file \texttt{docrepo-response.html} created in the
 document directory; this contains the raw HTML the uploading script got
@@ -1723,7 +1737,7 @@ branch to using ``main''.  Depending on the repository, you may need to
 adapt the above commandline accordingly.
 
 \item Once you are happy with the change (and we do recommend building
-the PDF document locally to review it) you can save it to git and send
+the PDF document locally to review it) you can commit it and push
 it to your forked repository.  The status command will list everything
 that has changed and the add command will include it the commit.
 
@@ -1737,8 +1751,8 @@ git push mine branch-name-for-change
 \item  Then, on the GitHub web interface for your repository, create
 your Pull Request to contribute it back to the official repository.
 
-\item  Wait for reviews, update the change as needed, repeating step 4
-for each set of changes. Once the change is approved by a maintainer,
+\item  Wait for reviews, update the pull request as needed, repeating step 4
+for each set of changes. Once the pull request is approved by a maintainer,
 the maintainer may merge your change themselves or leave you to merge
 once you are ready.
 \end{enumerate}
@@ -1980,7 +1994,7 @@ had in its preamble the definitions
 \fi
 \end{lstlisting}
 
-(this mechanism proved useful for other specifications, too, and so
+\noindent (this mechanism proved useful for other specifications, too, and so
 it is part of \ivoatex~proper now).
 
 \subsection{Custom CSS}
@@ -2078,21 +2092,22 @@ themselves in a file producing meaningful diffs.
 
 \subsection{A Regression Test for \ivoatex}
 
-In this document's repository, there is a regression test suite for
+The ivoatex repository contains a regression test suite for
 \ivoatex.  The idea is that authors changing \ivoatex~can run it and
-have some confidence that they have not damaged very common and central
+gain some confidence that they have not damaged very common and central
 functionality.  Of course, there are many aspects of \ivoatex~that are
 only loosely exercised, if at all.
 
-To run the regression test, in a checkout of \ivoatex Doc, run
+To run the regression test, in a checkout of \ivoatex, run
 
 \begin{lstlisting}
-python regressiontest/run-regression.py
+cd regressiontest
+python3 run-regression.py
 \end{lstlisting}
 
-To test proposed changes in the \ivoatex repository, pass a
-\verb|--branch| option; patches to enable fetching the repository from
-somewhere else are welcome.
+By default, this will exercise the local ivoatex \emph{as committed}.
+If necessary, the tests can also run against some ivoatex maintained
+elsewhere; see the branch and repo-url options.
 
 Passing tests will not produce any output, failing tests will give a
 python traceback and then drop one in a shell in the temporary directory
@@ -2197,6 +2212,7 @@ $ podman run --rm --tty --interactive \
 \item Amended the submission checklist, in particular as regards
 tagging.
 \item Added an appendix on containerised operation.
+\item Mentioned new \verb|update-stdrec.py| script.
 \item Moved the regression test to ivoatex proper.
 \end{itemize}
 
