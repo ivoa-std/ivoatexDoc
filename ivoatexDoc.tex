@@ -211,15 +211,16 @@ package managers.
 
 On Debian-derived systems, the dependencies should be present after
 running a distribution-specific adaption of
-\begin{lstlisting}[basicstyle=\footnotesize]
-apt install build-essential texlive-latex-extra zip xsltproc git latexmk\
-  texlive-bibtex-extra imagemagick ghostscript cm-super librsvg2-bin
+\begin{lstlisting}
+apt install build-essential texlive-latex-extra zip xsltproc git\
+  latexmk texlive-bibtex-extra imagemagick ghostscript cm-super\
+  librsvg2-bin pdf2svg
 \end{lstlisting}
 (cm-super contains vector versions of computer modern fonts in T1
 encoding), on RPM-based systems something like
 \begin{lstlisting}
 yum install texlive-scheme-full libxslt make gcc zip\
-  ImageMagick ghostscript git
+  ImageMagick ghostscript git pdf2svg
 \end{lstlisting}
 should pull in everything that is necessary.
 
