@@ -40,6 +40,7 @@
 
 \editor{Markus Demleitner}
 
+\previousversion[http://ivoa.net/documents/Notes/IVOATexDoc/20250402]{Version 1.5}
 \previousversion[http://ivoa.net/documents/Notes/IVOATexDoc/20230627]{Version 1.4}
 \previousversion[http://ivoa.net/documents/Notes/IVOATexDoc/20220525]{Version 1.3}
 \previousversion[http://www.ivoa.net/documents/Notes/IVOATexDoc/20180814]{Version
@@ -1323,7 +1324,7 @@ standard\footnote{\url{https://github.com/ivoa-std/VOResource}} shows an
 example (edited here for clarity):
 
 \begin{lstlisting}[basicstyle=\footnotesize]
-STILTS ?= java -jar stilts.jar
+STILTS ?= stilts
 
 # These tests need STILTS >=3.4-4
 test:
@@ -1620,7 +1621,7 @@ force-merge in this situation.
 
 \item Run \verb|git checkout main| (or \verb|git checkout master| for
 non-migrated repos), followed by \verb|git pull| to bring your local
-copy up to date.  You are now on a revision that will permantently be in
+copy up to date.  You are now on a revision that will permanently be in
 the document history.
 
 \item Run \verb|make upload|.  This will ask you to review the document
@@ -2202,7 +2203,45 @@ $ podman run --rm --tty --interactive \
   ivoatex
 \end{lstlisting}
 
+\section{Troubleshooting}
+
+\begin{itemize}
+\item When building HTML renderings, you may see messages like
+\begin{lstlisting}
+convert -density 300 -scale 25% schema.pdf schema.png
+convert-im6.q16: attempt to perform an operation not allowed by the
+security policy `PDF' @ error/constitute.c/IsCoderAuthorized/413.
+\end{lstlisting}
+
+This means that your local (possibly distribution-provided) imagemagick
+policy forbids running ghostscript.  To fix this, edit imagemagick's
+\verb|policy.xml| (typically found in \verb|/etc/ImageMagick-6/|).  You
+should find a line like
+
+\begin{lstlisting}
+<policy domain="coder" rights="none" pattern="PDF" />
+\end{lstlisting}
+
+in there if you are seeing the above error.  Replace this with
+
+\begin{lstlisting}
+<policy domain="coder" rights="read|write" pattern="PDF" />
+\end{lstlisting}
+
+(or equivalent, where in this case you actually only need \verb|read|;
+but then \verb|write| the the much less dangerous option, and you may
+want to consider the implications if you expect to run convert on
+untrusted PDFs).
+
+\end{itemize}
+
 \section{Changes from Previous Versions}
+
+\subsection{Changes from Version 1.5}
+
+\begin{itemize}
+\item Added an appendix on troubleshooting.
+\end{itemize}
 
 \subsection{Changes from Version 1.4}
 
