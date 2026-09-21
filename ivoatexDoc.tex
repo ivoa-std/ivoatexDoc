@@ -2160,7 +2160,7 @@ $ git clone https://github.com/ivoa-std/ivoatexDoc
 $ cd ivoatexDoc
 $ DOC_PATH=$(pwd)
 $ podman run --rm --tty --interactive \
-    --volume "${DOC_PATH:?}:/document:rw,z" \
+    --volume "${DOC_PATH:?}:/workspace:rw,z" \
     ghcr.io/ivoa-std/ivoadoc:latest
   # (from here on, you are in the container)
 $ make
